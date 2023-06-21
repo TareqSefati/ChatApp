@@ -169,16 +169,17 @@ public class ServerController2 implements Initializable {
                             dispatchMessageToAllClients(message);
                         } else if (message.getMessageType().equals(MessageType.PLAIN) && isValidMessage(message)){
                             System.out.println(message.toString());
-//                            // send this message to sender socket client.
-//                            if(activeClientList.containsKey(message.getReceiverId())){
-//                                //send message to specific client immediately
-//                                Socket skt = activeClientList.get(message.getReceiverId());
-//                                //objectOutputStream.writeObject(message);
-//                                //objectOutputStream.flush();
-//                                System.out.println("Message is sent to active client: " + message);
-//                            } else if (isFoundInClientList(message.getReceiverId())) {
-//                                // store the message in db and send it later
-//                            }
+                            // send this message to sender socket client.
+                            if(activeClientList.containsKey(message.getReceiverId())){
+                                //send message to specific client immediately
+                                Socket skt = activeClientList.get(message.getReceiverId());
+                                objectOutputStream = new ObjectOutputStream(skt.getOutputStream());
+                                objectOutputStream.writeObject(message);
+                                objectOutputStream.flush();
+                                System.out.println("Message is sent to active client: " + message);
+                            } else if (isFoundInClientList(message.getReceiverId())) {
+                                // store the message in db and send it later
+                            }
                         }
 //                        String messageFromClient = bufferedReader.readLine();
 //                        ServerController.addLabel(messageFromClient, vBox);
