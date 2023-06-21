@@ -131,6 +131,7 @@ public class ClientController2 implements Initializable {
                                 //insert all active clients to list view - new client
                                 System.out.println("Client: updating active clients view - new client");
                                 activeClientListView.getItems().addAll(activeClientIds);
+                                activeClientListView.getItems().remove(activeClientListView.getItems().size() - 1);
                             }else {
                                 //insert only last active client to list view - old client
                                 System.out.println("Client: updating active clients view - old client");

@@ -77,8 +77,8 @@ public class ServerController2 implements Initializable {
                         System.out.println("Server is waiting for client...");
                         socket = serverSocket.accept();
                         System.out.println("A new client is joined: " + socket.toString());
-                        //registerClient(socket);  //update the active client list in server side
-                        //sendActiveClientList(activeClientList); //give command to all clients to update their activeClientListView
+                        //registerClient(socket);  //todo: update the active client list in server side
+                        //sendActiveClientList(activeClientList); //todo: give command to all clients to update their activeClientListView
                         communicateWithClient(socket);
                     } catch (IOException ex){
                         ex.printStackTrace();
