@@ -14,9 +14,9 @@ public class ClientApplication extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("client-view.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("clientUI.fxml"));
         primaryStage.setTitle("Client!");
-        primaryStage.setScene(new Scene(root, 480, 400));
+        primaryStage.setScene(new Scene(root));
         primaryStage.show();
     }
 
