@@ -52,6 +52,8 @@ public class ServerController2 implements Initializable {
     private Map<String, Socket> activeClientList;
     private List<String> activeClientIds;
 
+    private ObjectOutputStream objectOutputStream;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 //        try{
@@ -124,7 +126,7 @@ public class ServerController2 implements Initializable {
                 while(skt != null && skt.isConnected()){
                     try{
                         ObjectInputStream objectInputStream = new ObjectInputStream(skt.getInputStream());
-                        ObjectOutputStream objectOutputStream;// = new ObjectOutputStream(skt.getOutputStream()); // this should not be done here
+//                        ObjectOutputStream objectOutputStream;// = new ObjectOutputStream(skt.getOutputStream()); // this should not be done here
                         Message message = (Message) objectInputStream.readObject();
                         if(message.getMessageType().equals(MessageType.CONNECTION)){
                             //Receive Initial message & store this new client to active user list.
@@ -164,15 +166,9 @@ public class ServerController2 implements Initializable {
                             activeClientMessage.setSenderId("SERVER");
                             activeClientMessage.setReceiverId(message.getSenderId());
                             activeClientMessage.setDataObject(activeClientIds);
-                            //dispatchMessageToAllClients(activeClientMessage);
-                            for (var activeClient : activeClientList.entrySet()) {
-                                Socket s = activeClient.getValue();
-                                objectOutputStream = new ObjectOutputStream(s.getOutputStream());
-                                objectOutputStream.writeObject(activeClientMessage);
-                                objectOutputStream.flush();
-                            }
-                        }
-//                        else if (message.getMessageType().equals(MessageType.PLAIN) && isValidMessage(message)){
+                            dispatchMessageToAllClients(message);
+                        } else if (message.getMessageType().equals(MessageType.PLAIN) && isValidMessage(message)){
+                            System.out.println(message.toString());
 //                            // send this message to sender socket client.
 //                            if(activeClientList.containsKey(message.getReceiverId())){
 //                                //send message to specific client immediately
@@ -183,7 +179,7 @@ public class ServerController2 implements Initializable {
 //                            } else if (isFoundInClientList(message.getReceiverId())) {
 //                                // store the message in db and send it later
 //                            }
-//                        }
+                        }
 //                        String messageFromClient = bufferedReader.readLine();
 //                        ServerController.addLabel(messageFromClient, vBox);
                     }catch (IOException | ClassNotFoundException e){
@@ -194,20 +190,20 @@ public class ServerController2 implements Initializable {
                     }
                 }
             }
-            private void dispatchMessageToAllClients(Message activeClientMessage) throws IOException {
-                ObjectOutputStream objectOutputStream;
-//                System.out.println("Server: updated active client list sent to all clients.");
-//                Message activeClientMessage = new Message();
-//                activeClientMessage.setMessageType(MessageType.ACTIVE_CLIENTS);
-//                activeClientMessage.setSenderId("SERVER");
-//                activeClientMessage.setReceiverId(message.getSenderId());
-//                activeClientMessage.setDataObject(activeClientIds);
-//                for (var activeClient : activeClientList.entrySet()) {
-//                    Socket s = activeClient.getValue();
-//                    objectOutputStream = new ObjectOutputStream(s.getOutputStream());
-//                    objectOutputStream.writeObject(activeClientMessage);
-//                    objectOutputStream.flush();
-//                }
+            private void dispatchMessageToAllClients(Message message) throws IOException {
+                //ObjectOutputStream objectOutputStream;
+                System.out.println("Server: updated active client list sent to all clients.");
+                Message activeClientMessage = new Message();
+                activeClientMessage.setMessageType(MessageType.ACTIVE_CLIENTS);
+                activeClientMessage.setSenderId("SERVER");
+                activeClientMessage.setReceiverId(message.getSenderId());
+                activeClientMessage.setDataObject(activeClientIds);
+                for (var activeClient : activeClientList.entrySet()) {
+                    Socket s = activeClient.getValue();
+                    objectOutputStream = new ObjectOutputStream(s.getOutputStream());
+                    objectOutputStream.writeObject(activeClientMessage);
+                    objectOutputStream.flush();
+                }
             }
             private boolean isFoundInClientList(String receiverId) {
                 return false;

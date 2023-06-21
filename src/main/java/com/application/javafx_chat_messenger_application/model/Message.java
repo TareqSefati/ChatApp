@@ -73,12 +73,15 @@ public class Message implements Serializable {
     public Message() {
     }
 
-    public Message(String senderId, String receiverId, String msg, Date sentDateTime, MessageType messageType, Object dataObject) {
-        this.senderId = senderId;
-        this.receiverId = receiverId;
-        this.msg = msg;
-        this.sentDateTime = sentDateTime;
-        this.messageType = messageType;
-        this.dataObject = dataObject;
+    @Override
+    public String toString() {
+        return "Message{" +
+                "senderId='" + senderId + '\'' +
+                ", receiverId='" + receiverId + '\'' +
+                ", msg='" + msg + '\'' +
+                ", sentDateTime=" + sentDateTime +
+                ", messageType=" + messageType +
+                ", dataObject=" + dataObject +
+                '}';
     }
 }

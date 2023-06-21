@@ -18,6 +18,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.URL;
 import java.time.LocalTime;
+import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -54,7 +55,7 @@ public class ClientController2 implements Initializable {
             socket = new Socket("localhost", 1234);
             System.out.println("Connected to Server");
             labelInfo.setText("Connected to Server");
-            sendInitialMessageToServer(socket);
+            sendMessageToServer(getInitialMessage());
             communicateWithServer(socket);
         } catch (IOException e){
             e.printStackTrace();
@@ -77,24 +78,32 @@ public class ClientController2 implements Initializable {
     }
 
 
-    private void sendInitialMessageToServer(Socket socket) {
-        System.out.println("Sending Initial connection message to server.....");
-        Message message = new Message();
-        userId = "Id-"+ LocalTime.now();
-        message.setSenderId(userId);
-        message.setMessageType(MessageType.CONNECTION);
+    private void sendMessageToServer(Message message) {
+        if (message.getMessageType().equals(MessageType.CONNECTION)){
+            System.out.println("Sending Initial connection message to server.....");
+        } else if (message.getMessageType().equals(MessageType.PLAIN)) {
+            System.out.println("Sending general message to server.....");
+        }
         try {
             objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
             objectOutputStream.writeObject(message);
             objectOutputStream.flush();
-            System.out.println("Initial message sent to server successfully!");
+            System.out.println("Client: Message sent to server successfully!");
             //objectOutputStream.close();  //don't use this. dangerous error
         } catch (IOException e) {
             e.printStackTrace();
-            System.out.println("Initial message send to server failed ... ");
-            labelInfo.setText("Initial message send to server failed ... ");
+            System.out.println("Client: Message sent to server failed ... ");
+            labelInfo.setText("Client: Message sent to server failed ... ");
             //closeSocket(socket); // could be implemented, i don't know - have to think
         }
+    }
+
+    private Message getInitialMessage(){
+        Message message = new Message();
+        userId = "Id-"+ LocalTime.now();
+        message.setSenderId(userId);
+        message.setMessageType(MessageType.CONNECTION);
+        return message;
     }
 
     private void receiverMessageTread(Socket skt){
@@ -144,6 +153,16 @@ public class ClientController2 implements Initializable {
 
     @FXML
     void sendMessage(ActionEvent event) {
+        //activeClientListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+        if (activeClientListView.getSelectionModel().getSelectedItem() != null) {
+            String receiverId = activeClientListView.getSelectionModel().getSelectedItem();
+            if(!receiverId.equals(userId)){
+                String msg = userId + " -> " + receiverId + " : " + tf_message.getText();
+                Message message = new Message(userId, receiverId, msg, new Date(), MessageType.PLAIN);
+                System.out.println(message.toString());
+                sendMessageToServer(message);
+            }
 
+        }
     }
 }
