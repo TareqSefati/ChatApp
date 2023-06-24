@@ -118,7 +118,7 @@ public class ClientController2 implements Initializable {
 
     private void receiverMessageTread(Socket skt){
         System.out.println("Client: Starting receiver thread.");
-        new Thread(() -> {
+        Thread t = new Thread(() -> {
             while(skt != null && skt.isConnected()) {
                 try {
                     ObjectInputStream objectInputStream = new ObjectInputStream(skt.getInputStream());
@@ -152,7 +152,9 @@ public class ClientController2 implements Initializable {
                     break;
                 }
             }
-        }).start();
+        });
+        t.setDaemon(true);
+        t.start();
     }
 
     private void closeSocket(Socket socket) {
@@ -165,28 +167,30 @@ public class ClientController2 implements Initializable {
         }
     }
 
-    private void updateMessagesUI(Message message, Pos alignmentPositition){
+    private void updateMessagesUI(Message message, Pos alignmentPosition){
         HBox hBox = new HBox();
-        hBox.setAlignment(alignmentPositition);
+        hBox.setAlignment(alignmentPosition);
 
 
-        Text text = new Text(message.getMsg());
+        Text text = new Text();
         TextFlow textFlow = new TextFlow(text);
 
 
-        if(alignmentPositition.equals(Pos.CENTER_RIGHT)){
+        if(alignmentPosition.equals(Pos.CENTER_RIGHT)){
+            text.setText(message.getMsg());
             hBox.setPadding(new Insets(5, 5, 5, 35));
-            textFlow.setPadding(new Insets(5, 10, 5, 35));
+            textFlow.setPadding(new Insets(5, 5, 5, 5));
             textFlow.setStyle(
                     "-fx-color: rgb(239, 242, 255);" +
                             "-fx-background-color: rgb(15, 125, 242);" +
-                            "-fx-background-radius: 20px;");
-        } else if (alignmentPositition.equals(Pos.CENTER_LEFT)) {
+                            "-fx-background-radius: 10px;");
+        } else if (alignmentPosition.equals(Pos.CENTER_LEFT)) {
+            text.setText(message.getSenderId()+ "->"+ message.getMsg());
             hBox.setPadding(new Insets(5, 35, 5, 5));
-            textFlow.setPadding(new Insets(5, 35, 5, 5));
+            textFlow.setPadding(new Insets(5, 5, 5, 5));
             textFlow.setStyle(
                     "-fx-background-color: rgb(233, 233, 235);" +
-                            "-fx-background-radius: 20px;");
+                            "-fx-background-radius: 10px;");
         }
 
         hBox.getChildren().add(textFlow);
@@ -202,7 +206,7 @@ public class ClientController2 implements Initializable {
         if (activeClientListView.getSelectionModel().getSelectedItem() != null) {
             String receiverId = activeClientListView.getSelectionModel().getSelectedItem();
             if(!receiverId.equals(userId)){
-                String msg = userId + " -> " + receiverId + " : " + tf_message.getText();
+                String msg = tf_message.getText();
                 Message message = new Message(userId, receiverId, msg, new Date(), MessageType.PLAIN);
                 System.out.println(message.toString());
                 sendMessageToServer(message);

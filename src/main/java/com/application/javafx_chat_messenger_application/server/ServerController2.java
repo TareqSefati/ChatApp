@@ -14,6 +14,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -28,6 +29,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.URL;
 import java.util.*;
 
@@ -39,7 +41,7 @@ public class ServerController2 implements Initializable {
     @FXML
     private TextField tf_message;
     @FXML
-    VBox activeClientsBox;
+    private VBox activeClientsBox;
     @FXML
     private VBox usersBox;
     @FXML
@@ -71,7 +73,7 @@ public class ServerController2 implements Initializable {
             labelInfo.setText("Server successfully created.");
             System.out.println("Server successfully created.");
 
-            new Thread(() -> {
+            Thread t = new Thread(() -> {
                 while (!serverSocket.isClosed()) {
                     try {
                         System.out.println("Server is waiting for client...");
@@ -80,14 +82,16 @@ public class ServerController2 implements Initializable {
                         //registerClient(socket);  //todo: update the active client list in server side
                         //sendActiveClientList(activeClientList); //todo: give command to all clients to update their activeClientListView
                         communicateWithClient(socket);
-                    } catch (IOException ex){
+                    } catch (IOException ex) {
                         ex.printStackTrace();
                         System.out.println("Server-side message: Client is failed to join.");
                         closeSocket(socket);
                     }
                 }
-            }).start();
-        } catch (IOException e){
+            });
+            t.setDaemon(true);
+            t.start();
+        } catch (IOException e) {
             e.printStackTrace();
             labelInfo.setText("Error creating Server ... ");
             System.out.println("Error creating Server ... ");
@@ -110,34 +114,37 @@ public class ServerController2 implements Initializable {
     }
 
     private void closeSocket(Socket socket) {
-        try{
+        try {
             if (socket != null) {
                 socket.close();
+                System.out.println(socket + "Socket is closed successfully.");
             }
-        }catch(IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     private void communicateWithClient(Socket skt) {
-        new Thread(new Runnable() {
+        Thread communicateWithClientThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                while(skt != null && skt.isConnected()){
-                    try{
+                String clientId = null;
+                try {
+                    while (skt != null && skt.isConnected()) {
                         ObjectInputStream objectInputStream = new ObjectInputStream(skt.getInputStream());
 //                        ObjectOutputStream objectOutputStream;// = new ObjectOutputStream(skt.getOutputStream()); // this should not be done here
                         Message message = (Message) objectInputStream.readObject();
-                        if(message.getMessageType().equals(MessageType.CONNECTION)){
+                        if (message.getMessageType().equals(MessageType.CONNECTION)) {
                             //Receive Initial message & store this new client to active user list.
+                            clientId = message.getSenderId();
                             activeClientList.put(message.getSenderId(), skt);
                             activeClientIds.add(message.getSenderId());
                             System.out.println("Connection message-server: " + message);
                             System.out.println("Active Client Number: " + activeClientList.size());
                             HBox hBox = new HBox(20);
-                            TextFlow textFlow = new TextFlow(new Text(message.getSenderId()));
+                            Text text = new Text(message.getSenderId());
                             Button button = new Button("X");
-                            hBox.getChildren().addAll(textFlow,button);
+                            hBox.getChildren().addAll(text, button);
 
                             //Updating active client list in server UI
                             Platform.runLater(new Runnable() {
@@ -167,10 +174,10 @@ public class ServerController2 implements Initializable {
                             activeClientMessage.setReceiverId(message.getSenderId());
                             activeClientMessage.setDataObject(activeClientIds);
                             dispatchMessageToAllClients(message);
-                        } else if (message.getMessageType().equals(MessageType.PLAIN) && isValidMessage(message)){
+                        } else if (message.getMessageType().equals(MessageType.PLAIN) && isValidMessage(message)) {
                             System.out.println(message.toString());
                             // send this message to sender socket client.
-                            if(activeClientList.containsKey(message.getReceiverId())){
+                            if (activeClientList.containsKey(message.getReceiverId())) {
                                 //send message to specific client immediately
                                 Socket skt = activeClientList.get(message.getReceiverId());
                                 objectOutputStream = new ObjectOutputStream(skt.getOutputStream());
@@ -183,14 +190,33 @@ public class ServerController2 implements Initializable {
                         }
 //                        String messageFromClient = bufferedReader.readLine();
 //                        ServerController.addLabel(messageFromClient, vBox);
-                    }catch (IOException | ClassNotFoundException e){
-                        e.printStackTrace();
-                        System.out.println("Error receiving message from the Client!");
-                        closeSocket(skt);
-                        break;
                     }
+                } catch (IOException | ClassNotFoundException e) {
+                    if (e instanceof SocketException){
+                        System.out.println("Some how client is disconnected.");
+                        if (clientId != null){
+                            System.out.println("Update server with active client list & also UI");
+                            activeClientList.remove(clientId);
+                            activeClientIds.remove(clientId);
+                            for (Node n : activeClientsBox.getChildren()) {
+                                HBox hBox = (HBox) n;
+                                Text text = (Text) hBox.getChildren().get(0);
+                                if (text.getText().equals(clientId)){
+                                    Platform.runLater(() -> {
+                                        activeClientsBox.getChildren().remove(n);
+                                    });
+                                    break;
+                                }
+                            }
+                        }
+
+                    }
+                    e.printStackTrace();
+                    System.out.println("Error receiving message from the Client!");
+                    closeSocket(skt);
                 }
             }
+
             private void dispatchMessageToAllClients(Message message) throws IOException {
                 //ObjectOutputStream objectOutputStream;
                 System.out.println("Server: updated active client list sent to all clients.");
@@ -206,33 +232,36 @@ public class ServerController2 implements Initializable {
                     objectOutputStream.flush();
                 }
             }
+
             private boolean isFoundInClientList(String receiverId) {
                 return false;
             }
 
             private boolean isValidMessage(Message message) {
-                if(message.getSenderId() != null && !message.getSenderId().isEmpty()
-                    && message.getReceiverId() != null && !message.getReceiverId().isEmpty()
+                if (message.getSenderId() != null && !message.getSenderId().isEmpty()
+                        && message.getReceiverId() != null && !message.getReceiverId().isEmpty()
                         && message.getMsg() != null && !message.getMsg().isEmpty()
-                            && message.getSentDateTime() != null && !message.getSenderId().equals(message.getReceiverId())) {
+                        && message.getSentDateTime() != null && !message.getSenderId().equals(message.getReceiverId())) {
                     return true;
-                }else {
+                } else {
                     return false;
                 }
             }
 
-        }).start();
+        });
+        communicateWithClientThread.setDaemon(true);
+        communicateWithClientThread.start();
     }
 
     private void loadUsers() {
         List<User> userList = UserController.generateDummyUsers(10);
-        for(User u : userList){
-            Text t = new Text(u.getUserId() + " :: " +u.getUsername());
+        for (User u : userList) {
+            Text t = new Text(u.getUserId() + " :: " + u.getUsername());
             usersBox.getChildren().add(t);
         }
     }
 
-    public static void addLabel(String messageFromClient, VBox vBox){
+    public static void addLabel(String messageFromClient, VBox vBox) {
         HBox hBox = new HBox();
         hBox.setAlignment(Pos.CENTER_LEFT);
         hBox.setPadding(new Insets(5, 5, 5, 10));
@@ -241,7 +270,7 @@ public class ServerController2 implements Initializable {
         TextFlow textFlow = new TextFlow(text);
 
         textFlow.setStyle(
-                        "-fx-background-color: rgb(233, 233, 235);" +
+                "-fx-background-color: rgb(233, 233, 235);" +
                         "-fx-background-radius: 20px;");
 
         textFlow.setPadding(new Insets(5, 10, 5, 10));

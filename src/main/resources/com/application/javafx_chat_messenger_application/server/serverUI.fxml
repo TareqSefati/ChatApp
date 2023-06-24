@@ -41,12 +41,12 @@
                <children>
                   <ScrollPane fx:id="spUserList" prefHeight="200.0" prefWidth="244.0">
                      <content>
-                        <VBox fx:id="usersBox" alignment="CENTER" prefHeight="198.0" prefWidth="242.0" />
+                        <VBox fx:id="usersBox" alignment="CENTER" prefHeight="197.0" prefWidth="241.0" />
                      </content>
                   </ScrollPane>
                   <ScrollPane fx:id="sp_main" prefHeight="200.0" prefWidth="331.0">
                      <content>
-                        <VBox fx:id="activeClientsBox" alignment="CENTER" prefHeight="198.0" prefWidth="329.0" />
+                        <VBox fx:id="activeClientsBox" alignment="CENTER" prefHeight="197.0" prefWidth="328.0" />
                      </content>
                   </ScrollPane>
                </children>
