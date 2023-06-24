@@ -173,7 +173,7 @@ public class ServerController2 implements Initializable {
                             activeClientMessage.setSenderId("SERVER");
                             activeClientMessage.setReceiverId(message.getSenderId());
                             activeClientMessage.setDataObject(activeClientIds);
-                            dispatchMessageToAllClients(message);
+                            dispatchMessageToAllClients(activeClientMessage);
                         } else if (message.getMessageType().equals(MessageType.PLAIN) && isValidMessage(message)) {
                             System.out.println(message.toString());
                             // send this message to sender socket client.
@@ -192,6 +192,7 @@ public class ServerController2 implements Initializable {
 //                        ServerController.addLabel(messageFromClient, vBox);
                     }
                 } catch (IOException | ClassNotFoundException e) {
+                    closeSocket(skt);
                     if (e instanceof SocketException){
                         System.out.println("Some how client is disconnected.");
                         if (clientId != null){
@@ -208,27 +209,31 @@ public class ServerController2 implements Initializable {
                                     break;
                                 }
                             }
+                            //Send command to all clients to update their active client list.
+                            Message romoveClientMessage = new Message();
+                            romoveClientMessage.setMessageType(MessageType.REMOVE_CLIENT);
+                            romoveClientMessage.setSenderId("SERVER");
+                            romoveClientMessage.setReceiverId("");
+                            romoveClientMessage.setDataObject(clientId);
+                            try {
+                                dispatchMessageToAllClients(romoveClientMessage);
+                                System.out.println("Server: Success to Send command to all clients to update their active client list.");
+                            } catch (IOException ex) {
+                                System.out.println("Server: Failed to Send command to all clients to update their active client list.");
+                            }
                         }
-
                     }
                     e.printStackTrace();
                     System.out.println("Error receiving message from the Client!");
-                    closeSocket(skt);
                 }
             }
 
             private void dispatchMessageToAllClients(Message message) throws IOException {
-                //ObjectOutputStream objectOutputStream;
                 System.out.println("Server: updated active client list sent to all clients.");
-                Message activeClientMessage = new Message();
-                activeClientMessage.setMessageType(MessageType.ACTIVE_CLIENTS);
-                activeClientMessage.setSenderId("SERVER");
-                activeClientMessage.setReceiverId(message.getSenderId());
-                activeClientMessage.setDataObject(activeClientIds);
                 for (var activeClient : activeClientList.entrySet()) {
                     Socket s = activeClient.getValue();
                     objectOutputStream = new ObjectOutputStream(s.getOutputStream());
-                    objectOutputStream.writeObject(activeClientMessage);
+                    objectOutputStream.writeObject(message);
                     objectOutputStream.flush();
                 }
             }

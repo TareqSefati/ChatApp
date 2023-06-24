@@ -138,6 +138,12 @@ public class ClientController2 implements Initializable {
                                 activeClientListView.getItems().add(activeClientIds.get(activeClientIds.size() - 1));
                             }
                         });
+                    } else if (message.getMessageType().equals(MessageType.REMOVE_CLIENT)) {
+                        System.out.println("Client: Removing a client from active client list.");
+                        Platform.runLater(() -> {
+                            activeClientListView.getItems().remove((String) message.getDataObject());
+                            activeClientListView.refresh();
+                        });
                     } else if (message.getMessageType().equals(MessageType.PLAIN)) {
                         System.out.println("Client: Plain general message received successfully.\n" + message.toString());
                         updateMessagesUI(message, Pos.CENTER_LEFT);
