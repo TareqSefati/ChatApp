@@ -23,9 +23,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.URL;
 import java.time.LocalTime;
-import java.util.Date;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
 /**
  * Created by Tareq Sefati on 19-Jun-23
@@ -57,6 +55,7 @@ public class ClientController2 implements Initializable {
     private Socket socket;
     private static String userId;
     private ObjectOutputStream objectOutputStream;
+    private Map<String, VBox> userConversationMap = new HashMap<>();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -81,7 +80,32 @@ public class ClientController2 implements Initializable {
                 sp_main.setVvalue((Double) newValue);
             }
         });
+        activeClientListView.getSelectionModel().selectedItemProperty().addListener( (observable, oldVal, newVal) -> {
 
+//            System.out.println("Old value: " + oldVal);
+//            System.out.println("New Value: " + newVal);
+            labelInfo.setText("Connected to Server  -  Chat with: " + newVal);
+            if (oldVal != null){
+                //Backup old conversation
+                if (!userConversationMap.containsKey(oldVal)){
+                    VBox oldMessages = new VBox();
+                    oldMessages.getChildren().addAll(vBoxMessages.getChildren());
+                    userConversationMap.put(oldVal, oldMessages);
+                }else {
+                    VBox oldMessages = new VBox();
+                    oldMessages.getChildren().addAll(vBoxMessages.getChildren());
+                    userConversationMap.replace(oldVal, oldMessages);
+                }
+                vBoxMessages.getChildren().clear();
+
+                //Restore new conversation
+                if (!userConversationMap.containsKey(newVal)){
+                    userConversationMap.put(newVal, new VBox());
+                }else {
+                    vBoxMessages.getChildren().addAll(userConversationMap.get(newVal));
+                }
+            }
+        });
     }
 
     private void communicateWithServer(Socket socket) {
@@ -176,12 +200,8 @@ public class ClientController2 implements Initializable {
     private void updateMessagesUI(Message message, Pos alignmentPosition){
         HBox hBox = new HBox();
         hBox.setAlignment(alignmentPosition);
-
-
         Text text = new Text();
         TextFlow textFlow = new TextFlow(text);
-
-
         if(alignmentPosition.equals(Pos.CENTER_RIGHT)){
             text.setText(message.getMsg());
             hBox.setPadding(new Insets(5, 5, 5, 35));
@@ -202,7 +222,6 @@ public class ClientController2 implements Initializable {
         hBox.getChildren().add(textFlow);
         Platform.runLater(() -> {
             vBoxMessages.getChildren().add(hBox);
-            tf_message.clear();
         });
     }
 
@@ -217,6 +236,7 @@ public class ClientController2 implements Initializable {
                 System.out.println(message.toString());
                 sendMessageToServer(message);
                 updateMessagesUI(message, Pos.CENTER_RIGHT);
+                tf_message.clear();
             }
 
         }
