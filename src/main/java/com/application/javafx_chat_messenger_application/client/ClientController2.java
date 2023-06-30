@@ -16,6 +16,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import javafx.util.Pair;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -55,7 +56,7 @@ public class ClientController2 implements Initializable {
     private Socket socket;
     private static String userId;
     private ObjectOutputStream objectOutputStream;
-    private Map<String, VBox> userConversationMap = new HashMap<>();
+    private Map<Pair<String, String>, VBox> userConversationMap = new HashMap<>();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -87,23 +88,23 @@ public class ClientController2 implements Initializable {
             labelInfo.setText("Connected to Server  -  Chat with: " + newVal);
             if (oldVal != null){
                 //Backup old conversation
-                if (!userConversationMap.containsKey(oldVal)){
-                    VBox oldMessages = new VBox();
+                Pair<String, String> pairOld = new Pair<>(userId, oldVal);
+                VBox oldMessages = new VBox();
+                if (!userConversationMap.containsKey(pairOld)){
                     oldMessages.getChildren().addAll(vBoxMessages.getChildren());
-                    userConversationMap.put(oldVal, oldMessages);
+                    userConversationMap.put(pairOld, oldMessages);
                 }else {
-                    VBox oldMessages = new VBox();
                     oldMessages.getChildren().addAll(vBoxMessages.getChildren());
-                    userConversationMap.replace(oldVal, oldMessages);
+                    userConversationMap.replace(pairOld, oldMessages);
                 }
                 vBoxMessages.getChildren().clear();
-
-                //Restore new conversation
-                if (!userConversationMap.containsKey(newVal)){
-                    userConversationMap.put(newVal, new VBox());
-                }else {
-                    vBoxMessages.getChildren().addAll(userConversationMap.get(newVal));
-                }
+            }
+            //Restore new conversation
+            Pair<String, String> pairNew = new Pair<>(userId, newVal);
+            if (!userConversationMap.containsKey(pairNew)){
+                userConversationMap.put(pairNew, new VBox());
+            }else {
+                vBoxMessages.getChildren().addAll(userConversationMap.get(pairNew));
             }
         });
     }
@@ -170,7 +171,20 @@ public class ClientController2 implements Initializable {
                         });
                     } else if (message.getMessageType().equals(MessageType.PLAIN)) {
                         System.out.println("Client: Plain general message received successfully.\n" + message.toString());
-                        updateMessagesUI(message, Pos.CENTER_LEFT);
+
+                        Pair<String, String> msgReceivedConversationPair = new Pair<>(userId, message.getSenderId());
+                        if (activeClientListView.getSelectionModel().getSelectedItem() != null &&
+                                activeClientListView.getSelectionModel().getSelectedItem().equals(message.getSenderId())){
+                            //Update the message box UI
+                            updateMessagesUI(message, Pos.CENTER_LEFT, true);
+                        }else {
+                            //Store message in conversation map VBox
+                            if (!userConversationMap.containsKey(msgReceivedConversationPair)){
+                                userConversationMap.put(msgReceivedConversationPair, new VBox()); //adding new user conversation map
+                            }
+                            updateMessagesUI(message, Pos.CENTER_LEFT, false);
+                        }
+
                     }
                 } catch (IOException | ClassNotFoundException e) {
                     e.printStackTrace();
@@ -197,7 +211,7 @@ public class ClientController2 implements Initializable {
         }
     }
 
-    private void updateMessagesUI(Message message, Pos alignmentPosition){
+    private void updateMessagesUI(Message message, Pos alignmentPosition, boolean isMainMessageUI){
         HBox hBox = new HBox();
         hBox.setAlignment(alignmentPosition);
         Text text = new Text();
@@ -220,9 +234,15 @@ public class ClientController2 implements Initializable {
         }
 
         hBox.getChildren().add(textFlow);
-        Platform.runLater(() -> {
-            vBoxMessages.getChildren().add(hBox);
-        });
+        if (isMainMessageUI){
+            Platform.runLater(() -> {
+                vBoxMessages.getChildren().add(hBox);
+            });
+        }else {
+            Pair<String, String> msgReceivedConversationPair = new Pair<>(userId, message.getSenderId());
+            userConversationMap.get(msgReceivedConversationPair).getChildren().add(hBox);
+        }
+
     }
 
     @FXML
@@ -235,7 +255,7 @@ public class ClientController2 implements Initializable {
                 Message message = new Message(userId, receiverId, msg, new Date(), MessageType.PLAIN);
                 System.out.println(message.toString());
                 sendMessageToServer(message);
-                updateMessagesUI(message, Pos.CENTER_RIGHT);
+                updateMessagesUI(message, Pos.CENTER_RIGHT, true);
                 tf_message.clear();
             }
 

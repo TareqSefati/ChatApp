@@ -13,6 +13,7 @@ public class Message implements Serializable {
     private Date sentDateTime;
     private MessageType messageType;
     private Object dataObject;
+    private String conversationHash;
 
     public String getSenderId() {
         return senderId;
@@ -62,6 +63,14 @@ public class Message implements Serializable {
         this.dataObject = dataObject;
     }
 
+    public String getConversationHash() {
+        return conversationHash;
+    }
+
+    public void setConversationHash(String conversationHash) {
+        this.conversationHash = conversationHash;
+    }
+
     public Message(String senderId, String receiverId, String msg, Date sentDateTime, MessageType messageType) {
         this.senderId = senderId;
         this.receiverId = receiverId;
@@ -73,15 +82,13 @@ public class Message implements Serializable {
     public Message() {
     }
 
-    @Override
-    public String toString() {
-        return "Message{" +
-                "senderId='" + senderId + '\'' +
-                ", receiverId='" + receiverId + '\'' +
-                ", msg='" + msg + '\'' +
-                ", sentDateTime=" + sentDateTime +
-                ", messageType=" + messageType +
-                ", dataObject=" + dataObject +
-                '}';
+    public Message(String senderId, String receiverId, String msg, Date sentDateTime, MessageType messageType, Object dataObject, String conversationHash) {
+        this.senderId = senderId;
+        this.receiverId = receiverId;
+        this.msg = msg;
+        this.sentDateTime = sentDateTime;
+        this.messageType = messageType;
+        this.dataObject = dataObject;
+        this.conversationHash = conversationHash;
     }
 }
