@@ -4,5 +4,6 @@ public enum MessageType {
     CONNECTION,
     PLAIN,
     ACTIVE_CLIENTS,
-    REMOVE_CLIENT
+    REMOVE_CLIENT,
+    GROUP_CREATION
 }

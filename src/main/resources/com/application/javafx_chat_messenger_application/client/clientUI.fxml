@@ -8,12 +8,13 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="ap_main" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.application.javafx_chat_messenger_application.client.ClientController2">
+<AnchorPane fx:id="ap_main" prefHeight="500.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.application.javafx_chat_messenger_application.client.ClientController2">
    <children>
-      <VBox alignment="CENTER" prefHeight="400.0" prefWidth="600.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <VBox alignment="CENTER" prefHeight="400.0" prefWidth="600.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <HBox alignment="CENTER" prefHeight="32.0" prefWidth="600.0">
                <children>
@@ -25,24 +26,53 @@
                </children>
             </HBox>
             <Label fx:id="labelInfo" />
-            <HBox prefHeight="260.0" prefWidth="600.0" spacing="10.0">
+            <HBox alignment="CENTER" prefHeight="375.0" prefWidth="600.0" spacing="10.0">
                <VBox.margin>
                   <Insets left="5.0" right="5.0" />
                </VBox.margin>
                <children>
-                  <ScrollPane prefHeight="260.0" prefWidth="392.0">
-                     <content>
-                        <ListView fx:id="activeClientListView" prefHeight="258.0" prefWidth="184.0" />
-                     </content>
-                  </ScrollPane>
+                  <VBox alignment="CENTER" spacing="1.0">
+                     <children>
+                        <ScrollPane prefHeight="223.0" prefWidth="392.0">
+                           <content>
+                              <ListView fx:id="activeClientListView" prefHeight="215.0" prefWidth="184.0" />
+                           </content>
+                        </ScrollPane>
+                        <HBox alignment="CENTER" prefHeight="35.0" prefWidth="186.0" spacing="5.0">
+                           <children>
+                              <Label alignment="CENTER" prefHeight="20.0" prefWidth="60.0" text="Groups">
+                                 <font>
+                                    <Font name="Arial Rounded MT Bold" size="13.0" />
+                                 </font>
+                              </Label>
+                              <Pane prefHeight="10.0" prefWidth="34.0" />
+                              <Button fx:id="btnCreateGroup" mnemonicParsing="false" onAction="#createGroup" prefHeight="22.0" prefWidth="35.0" text="+">
+                                 <font>
+                                    <Font name="Arial Rounded MT Bold" size="11.0" />
+                                 </font>
+                              </Button>
+                              <Button fx:id="btnDeleteGroup" layoutX="144.0" layoutY="14.0" mnemonicParsing="false" onAction="#deleteGroup" prefHeight="22.0" prefWidth="35.0" text="-">
+                                 <font>
+                                    <Font name="Arial Rounded MT Bold" size="11.0" />
+                                 </font>
+                              </Button>
+                           </children>
+                        </HBox>
+                        <ScrollPane prefHeight="132.0" prefWidth="186.0">
+                           <content>
+                              <ListView fx:id="groupListView" prefHeight="124.0" prefWidth="184.0" />
+                           </content>
+                        </ScrollPane>
+                     </children>
+                  </VBox>
                   <ScrollPane fx:id="sp_main" prefHeight="280.0" prefWidth="600.0">
                      <content>
-                        <VBox fx:id="vBoxMessages" alignment="BOTTOM_CENTER" prefHeight="252.0" prefWidth="390.0" spacing="5.0" />
+                        <VBox fx:id="vBoxMessages" alignment="BOTTOM_CENTER" prefHeight="372.0" prefWidth="390.0" spacing="5.0" />
                      </content>
                   </ScrollPane>
                </children>
             </HBox>
-            <HBox alignment="CENTER" prefHeight="41.0" prefWidth="600.0" spacing="20.0">
+            <HBox alignment="CENTER" prefHeight="41.0" prefWidth="600.0" spacing="35.0">
                <children>
                   <TextField fx:id="tf_message" prefHeight="31.0" prefWidth="508.0" />
                   <Button fx:id="button_send" mnemonicParsing="false" onAction="#sendMessage" text="Send">

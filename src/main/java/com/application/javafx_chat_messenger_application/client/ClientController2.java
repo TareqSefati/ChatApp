@@ -1,6 +1,7 @@
 package com.application.javafx_chat_messenger_application.client;
 
 import com.application.javafx_chat_messenger_application.model.Message;
+import com.application.javafx_chat_messenger_application.model.MessageGroup;
 import com.application.javafx_chat_messenger_application.model.MessageType;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -10,12 +11,16 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import javafx.util.Pair;
 
 import java.io.IOException;
@@ -43,10 +48,19 @@ public class ClientController2 implements Initializable {
     private ListView<String> activeClientListView;
 
     @FXML
+    private ListView<MessageGroup> groupListView;
+
+    @FXML
     private TextField tf_message;
 
     @FXML
     private Button button_send;
+
+    @FXML
+    private Button btnCreateGroup;
+
+    @FXML
+    private Button btnDeleteGroup;
 
     @FXML
     private Label labelClientName;
@@ -57,6 +71,7 @@ public class ClientController2 implements Initializable {
     private static String userId;
     private ObjectOutputStream objectOutputStream;
     private Map<Pair<String, String>, VBox> userConversationMap = new HashMap<>();
+    private List<MessageGroup> messageGroupList = new ArrayList<>();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -85,7 +100,11 @@ public class ClientController2 implements Initializable {
 
 //            System.out.println("Old value: " + oldVal);
 //            System.out.println("New Value: " + newVal);
-            labelInfo.setText("Connected to Server  -  Chat with: " + newVal);
+            if (newVal != null){
+                labelInfo.setText("Connected to Server  -  Chat with: " + newVal);
+            }else {
+                labelInfo.setText("Connected to Server.");
+            }
             if (oldVal != null){
                 //Backup old conversation
                 Pair<String, String> pairOld = new Pair<>(userId, oldVal);
@@ -107,6 +126,36 @@ public class ClientController2 implements Initializable {
                 vBoxMessages.getChildren().addAll(userConversationMap.get(pairNew));
             }
         });
+
+        groupListView.getSelectionModel().selectedItemProperty().addListener((observable, oldVal, newVal) -> {
+            if (newVal != null){
+                labelInfo.setText("Connected to Server  -  Chat with group: " + newVal.getGroupName());
+            }else {
+                labelInfo.setText("Connected to Server.");
+            }
+        });
+
+        groupListView.focusedProperty().addListener(observable -> {
+            if (groupListView.isFocused()){
+                activeClientListView.getSelectionModel().clearSelection();
+            }
+        });
+
+        activeClientListView.focusedProperty().addListener(observable -> {
+            if (activeClientListView.isFocused()){
+                groupListView.getSelectionModel().clearSelection();
+            }
+        });
+
+        groupListView.setCellFactory(messageGroupListView -> new ListCell<MessageGroup>(){
+            @Override
+            protected void updateItem(MessageGroup messageGroup, boolean empty) {
+                super.updateItem(messageGroup, empty);
+                if (!empty || messageGroup != null) {
+                    setText(messageGroup.getGroupName());
+                }
+            }
+        });
     }
 
     private void communicateWithServer(Socket socket) {
@@ -119,6 +168,8 @@ public class ClientController2 implements Initializable {
             System.out.println("Sending Initial connection message to server.....");
         } else if (message.getMessageType().equals(MessageType.PLAIN)) {
             System.out.println("Sending general message to server.....");
+        } else if (message.getMessageType().equals(MessageType.GROUP_CREATION)) {
+            System.out.println("Sending Group creation message to server.....");
         }
         try {
             objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
@@ -260,5 +311,78 @@ public class ClientController2 implements Initializable {
             }
 
         }
+    }
+
+    @FXML
+    void createGroup(ActionEvent event) {
+        Node node = (Node) event.getSource();
+//        Stage stage = (Stage) node.getScene().getWindow();
+        Stage groupCreationStage = new Stage();
+        groupCreationStage.initModality(Modality.WINDOW_MODAL);
+        groupCreationStage.initOwner(node.getScene().getWindow());
+        groupCreationStage.setTitle("Create new message group");
+
+        VBox container = new VBox(5);
+        container.setAlignment(Pos.CENTER);
+        container.setPrefSize(350, 500);
+        ListView<String> listView = new ListView<>(activeClientListView.getItems()); //Populating listview
+        listView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        TextField groupNameTf = new TextField();
+        groupNameTf.setAlignment(Pos.CENTER);
+        //groupNameTf.setPrefSize(100, 40);
+        Button btnCreateGroup = new Button("Create Group");
+        Button btnCancel = new Button("Cancel");
+        btnCancel.setOnAction(actionEvent -> {
+            groupCreationStage.close();
+        });
+        btnCreateGroup.setOnAction(actionEvent -> {
+            if (groupNameTf.getText() != null && listView.getSelectionModel().getSelectedItems().size() > 1){
+                String gName = groupNameTf.getText();
+                List<String> groupMemberList = new ArrayList<>(listView.getSelectionModel().getSelectedItems());
+                groupMemberList.add(userId); //adding myself to group as member.
+                List<String> groupAdminList = new ArrayList<>();
+                groupAdminList.add(userId); //adding myself to group as admin.
+                System.out.println(gName);
+                System.out.println(groupMemberList);
+                //groupListView.getItems().add(gName);
+                groupCreationStage.close();
+                System.out.println("New group is created.");
+                MessageGroup messageGroupDetails = new MessageGroup("gId-"+gName, gName, "gHash-"+gName, new Date(),
+                        groupMemberList, groupAdminList);
+                messageGroupList.add(messageGroupDetails);
+                groupListView.getItems().add(messageGroupDetails);
+                Message groupCreationMessage = new Message(userId, "SERVER", "New group creation",
+                        new Date(), MessageType.GROUP_CREATION);
+                groupCreationMessage.setDataObject(messageGroupDetails);
+                System.out.println("Client: New group creating message is sent to server.\n" + groupCreationMessage);
+                //sendMessageToServer(groupCreationMessage);
+            }
+        });
+        HBox hBox = new HBox(100, btnCreateGroup, btnCancel);
+        hBox.setAlignment(Pos.CENTER);
+        container.getChildren().addAll(listView, groupNameTf, hBox);
+        groupCreationStage.setScene(new Scene(container));
+        groupCreationStage.show();
+    }
+
+    @FXML
+    void deleteGroup(ActionEvent event) {
+//        String selectedGroup = groupListView.getSelectionModel().getSelectedItem();
+//        if (selectedGroup != null){
+//            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+//            alert.setTitle("Delete");
+//            alert.setHeaderText(null);
+//            alert.setContentText("Are you sure to delete message group : " + selectedGroup + " ?");
+//            Optional<ButtonType> buttonType = alert.showAndWait();
+//            if (buttonType.isPresent() && buttonType.get().equals(ButtonType.OK)){
+//                groupListView.getItems().remove(selectedGroup);
+//                System.out.println(selectedGroup + " is removed successfully.");
+//                labelInfo.setText(selectedGroup + " is removed successfully.");
+//                groupListView.getSelectionModel().clearSelection();
+//            }else {
+//                groupListView.getSelectionModel().clearSelection();
+//            }
+//
+//        }
     }
 }
