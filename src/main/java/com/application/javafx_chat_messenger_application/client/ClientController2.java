@@ -14,6 +14,8 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -24,6 +26,7 @@ import javafx.stage.Stage;
 import javafx.util.Pair;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
@@ -101,7 +104,7 @@ public class ClientController2 implements Initializable {
 //            System.out.println("Old value: " + oldVal);
 //            System.out.println("New Value: " + newVal);
             if (newVal != null){
-                labelInfo.setText("Connected to Server  -  Chat with: " + newVal);
+                labelInfo.setText("Connected to Server  -  Chat with: " + activeClientListView.getSelectionModel().getSelectedItem());
             }else {
                 labelInfo.setText("Connected to Server.");
             }
@@ -129,7 +132,7 @@ public class ClientController2 implements Initializable {
 
         groupListView.getSelectionModel().selectedItemProperty().addListener((observable, oldVal, newVal) -> {
             if (newVal != null){
-                labelInfo.setText("Connected to Server  -  Chat with group: " + newVal.getGroupName());
+                labelInfo.setText("Connected to Server  -  Chat with group: " + groupListView.getSelectionModel().getSelectedItem().getGroupName());
             }else {
                 labelInfo.setText("Connected to Server.");
             }
@@ -148,11 +151,28 @@ public class ClientController2 implements Initializable {
         });
 
         groupListView.setCellFactory(messageGroupListView -> new ListCell<MessageGroup>(){
+            private InputStream imageStream = this.getClass().getResourceAsStream("/com/application/javafx_chat_messenger_application/Images/team-fill.png");
+            private Image groupIconImage = new Image(imageStream);
+            private ImageView imageView = new ImageView();
+            private Label groupName = new Label();
+            private HBox layout = new HBox(10); //todo: further UI development by adding layout in list view
             @Override
             protected void updateItem(MessageGroup messageGroup, boolean empty) {
                 super.updateItem(messageGroup, empty);
-                if (!empty || messageGroup != null) {
+//                layout.setAlignment(Pos.CENTER);
+//                layout.setStyle("-fx-background-color: green;");
+                if (empty || messageGroup == null){
+                    setGraphic(null);
+                } else {
                     setText(messageGroup.getGroupName());
+//                    groupName.setText(messageGroup.getGroupName());
+                    imageView.setFitHeight(15);
+                    imageView.setFitWidth(15);
+                    imageView.setPreserveRatio(true);
+                    imageView.setImage(groupIconImage);
+//                    layout.getChildren().addAll(imageView, groupName);
+                    setGraphic(imageView);
+                    //setStyle("-fx-background-color: green;");
                 }
             }
         });
@@ -236,6 +256,13 @@ public class ClientController2 implements Initializable {
                             updateMessagesUI(message, Pos.CENTER_LEFT, false);
                         }
 
+                    } else if (message.getMessageType().equals(MessageType.GROUP_CREATION)) {
+                        MessageGroup messageGroupDetails = (MessageGroup) message.getDataObject();
+                        messageGroupList.add(messageGroupDetails);
+                        Platform.runLater(() -> {
+                            groupListView.getItems().add(messageGroupDetails);
+                            labelInfo.setText("New message group is created: " + messageGroupDetails.getGroupName());
+                        });
                     }
                 } catch (IOException | ClassNotFoundException e) {
                     e.printStackTrace();
@@ -300,8 +327,9 @@ public class ClientController2 implements Initializable {
     void sendMessage(ActionEvent event) {
         //activeClientListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         if (activeClientListView.getSelectionModel().getSelectedItem() != null) {
+            System.out.println("Client: Sending individual message");
             String receiverId = activeClientListView.getSelectionModel().getSelectedItem();
-            if(!receiverId.equals(userId)){
+            if(!receiverId.equals(userId) && !tf_message.getText().isEmpty()){
                 String msg = tf_message.getText();
                 Message message = new Message(userId, receiverId, msg, new Date(), MessageType.PLAIN);
                 System.out.println(message.toString());
@@ -351,11 +379,12 @@ public class ClientController2 implements Initializable {
                         groupMemberList, groupAdminList);
                 messageGroupList.add(messageGroupDetails);
                 groupListView.getItems().add(messageGroupDetails);
+                labelInfo.setText("New message group is created: " + gName);
                 Message groupCreationMessage = new Message(userId, "SERVER", "New group creation",
                         new Date(), MessageType.GROUP_CREATION);
                 groupCreationMessage.setDataObject(messageGroupDetails);
                 System.out.println("Client: New group creating message is sent to server.\n" + groupCreationMessage);
-                //sendMessageToServer(groupCreationMessage);
+                sendMessageToServer(groupCreationMessage);
             }
         });
         HBox hBox = new HBox(100, btnCreateGroup, btnCancel);

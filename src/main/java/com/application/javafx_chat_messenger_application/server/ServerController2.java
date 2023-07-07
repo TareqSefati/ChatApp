@@ -3,10 +3,7 @@ package com.application.javafx_chat_messenger_application.server;
  * Server Controller Class
  */
 
-import com.application.javafx_chat_messenger_application.model.Message;
-import com.application.javafx_chat_messenger_application.model.MessageType;
-import com.application.javafx_chat_messenger_application.model.User;
-import com.application.javafx_chat_messenger_application.model.UserController;
+import com.application.javafx_chat_messenger_application.model.*;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -187,6 +184,21 @@ public class ServerController2 implements Initializable {
                             } else if (isFoundInClientList(message.getReceiverId())) {
                                 // store the message in db and send it later
                             }
+                        } else if (message.getMessageType().equals(MessageType.GROUP_CREATION)) {
+                            //New group created message is received and send this info to group members.
+                            System.out.println("Server: New group created.\n" + message.toString());
+                            MessageGroup messageGroupDetails = (MessageGroup) message.getDataObject();
+                            List<String> participantIdList = messageGroupDetails.getParticipantIdList();
+                            for (String id : participantIdList) {
+                                if (!id.equals(message.getSenderId()) && activeClientList.containsKey(id)){
+                                    //Send this group information to all group member
+                                    Socket skt = activeClientList.get(id);
+                                    objectOutputStream = new ObjectOutputStream(skt.getOutputStream()); //(ObjectOutputStream) skt.getOutputStream(); -- this process does not work
+                                    objectOutputStream.writeObject(message);
+                                    objectOutputStream.flush();
+                                }
+                            }
+                            System.out.println("Server: Group creation message successfully sent to group member.");
                         }
 //                        String messageFromClient = bufferedReader.readLine();
 //                        ServerController.addLabel(messageFromClient, vBox);

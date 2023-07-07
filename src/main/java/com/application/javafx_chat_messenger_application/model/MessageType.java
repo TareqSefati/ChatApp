@@ -5,5 +5,6 @@ public enum MessageType {
     PLAIN,
     ACTIVE_CLIENTS,
     REMOVE_CLIENT,
-    GROUP_CREATION
+    GROUP_CREATION,
+    GROUP_MESSAGE
 }
