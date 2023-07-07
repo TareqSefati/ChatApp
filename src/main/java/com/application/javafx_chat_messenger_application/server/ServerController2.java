@@ -177,7 +177,7 @@ public class ServerController2 implements Initializable {
                             if (activeClientList.containsKey(message.getReceiverId())) {
                                 //send message to specific client immediately
                                 Socket skt = activeClientList.get(message.getReceiverId());
-                                objectOutputStream = new ObjectOutputStream(skt.getOutputStream());
+                                objectOutputStream = new ObjectOutputStream(skt.getOutputStream()); //(ObjectOutputStream) skt.getOutputStream(); -- this process does not work
                                 objectOutputStream.writeObject(message);
                                 objectOutputStream.flush();
                                 System.out.println("Message is sent to active client: " + message);
@@ -187,18 +187,12 @@ public class ServerController2 implements Initializable {
                         } else if (message.getMessageType().equals(MessageType.GROUP_CREATION)) {
                             //New group created message is received and send this info to group members.
                             System.out.println("Server: New group created.\n" + message.toString());
-                            MessageGroup messageGroupDetails = (MessageGroup) message.getDataObject();
-                            List<String> participantIdList = messageGroupDetails.getParticipantIdList();
-                            for (String id : participantIdList) {
-                                if (!id.equals(message.getSenderId()) && activeClientList.containsKey(id)){
-                                    //Send this group information to all group member
-                                    Socket skt = activeClientList.get(id);
-                                    objectOutputStream = new ObjectOutputStream(skt.getOutputStream()); //(ObjectOutputStream) skt.getOutputStream(); -- this process does not work
-                                    objectOutputStream.writeObject(message);
-                                    objectOutputStream.flush();
-                                }
-                            }
+                            sendToGroupMember(message);
                             System.out.println("Server: Group creation message successfully sent to group member.");
+                        } else if (message.getMessageType().equals(MessageType.GROUP_MESSAGE) && isValidMessage(message)) {
+                            System.out.println("Server: Received group message.\n" + message.toString());
+                            sendToGroupMember(message);
+                            System.out.println("Server: Group message successfully sent to group member.");
                         }
 //                        String messageFromClient = bufferedReader.readLine();
 //                        ServerController.addLabel(messageFromClient, vBox);
@@ -268,6 +262,20 @@ public class ServerController2 implements Initializable {
         });
         communicateWithClientThread.setDaemon(true);
         communicateWithClientThread.start();
+    }
+
+    private void sendToGroupMember(Message message) throws IOException {
+        MessageGroup messageGroupDetails = (MessageGroup) message.getDataObject();
+        List<String> participantIdList = messageGroupDetails.getParticipantIdList();
+        for (String id : participantIdList) {
+            if (!id.equals(message.getSenderId()) && activeClientList.containsKey(id)){
+                //Send this group information to all group member
+                Socket skt = activeClientList.get(id);
+                objectOutputStream = new ObjectOutputStream(skt.getOutputStream());
+                objectOutputStream.writeObject(message);
+                objectOutputStream.flush();
+            }
+        }
     }
 
     private void loadUsers() {

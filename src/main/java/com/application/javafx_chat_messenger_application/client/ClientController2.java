@@ -190,6 +190,8 @@ public class ClientController2 implements Initializable {
             System.out.println("Sending general message to server.....");
         } else if (message.getMessageType().equals(MessageType.GROUP_CREATION)) {
             System.out.println("Sending Group creation message to server.....");
+        } else if (message.getMessageType().equals(MessageType.GROUP_MESSAGE)) {
+            System.out.println("Sending Group message to server.....");
         }
         try {
             objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
@@ -263,6 +265,9 @@ public class ClientController2 implements Initializable {
                             groupListView.getItems().add(messageGroupDetails);
                             labelInfo.setText("New message group is created: " + messageGroupDetails.getGroupName());
                         });
+                    } else if (message.getMessageType().equals(MessageType.GROUP_MESSAGE)) {
+                        System.out.println("Client: Group message received successfully.\n" + message.toString());
+                        updateMessagesUI(message, Pos.CENTER_LEFT, true);
                     }
                 } catch (IOException | ClassNotFoundException e) {
                     e.printStackTrace();
@@ -337,7 +342,16 @@ public class ClientController2 implements Initializable {
                 updateMessagesUI(message, Pos.CENTER_RIGHT, true);
                 tf_message.clear();
             }
-
+        } else if (groupListView.getSelectionModel().getSelectedItem() != null) {
+            System.out.println("Client: Sending group message");
+            MessageGroup messageGroup = groupListView.getSelectionModel().getSelectedItem();
+            if (!tf_message.getText().isEmpty()) {
+                Message message = new Message(userId, "Group-Member", tf_message.getText(), new Date(), MessageType.GROUP_MESSAGE);
+                message.setDataObject(messageGroup);
+                sendMessageToServer(message);
+                updateMessagesUI(message, Pos.CENTER_RIGHT, true);
+                tf_message.clear();
+            }
         }
     }
 
