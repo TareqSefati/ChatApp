@@ -1,5 +1,8 @@
 package com.application.javafx_chat_messenger_application.model;
 
+import javafx.scene.layout.VBox;
+import javafx.util.Pair;
+
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,6 +29,7 @@ public class ProgramDummyDB {
 
     //CLIENT SIDE DATA:
     private static Map<String, List<MessageGroup>> userWiseGroupMap = new HashMap<>();
+    private static Map<Pair<String, String>, VBox> userWiseConversationMap = new HashMap<>();
 
     public static void checkUserAndAddGroup(String userId, MessageGroup messageGroup) {
         if (userWiseGroupMap.containsKey(userId)){
@@ -46,5 +50,9 @@ public class ProgramDummyDB {
             return userWiseGroupMap.get(userId);
         }
         return null;
+    }
+
+    public static Map<Pair<String, String>, VBox> getUserWiseConversationMap() {
+        return userWiseConversationMap;
     }
 }

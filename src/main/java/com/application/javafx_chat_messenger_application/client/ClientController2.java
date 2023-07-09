@@ -77,6 +77,7 @@ public class ClientController2 implements Initializable {
     private Map<Pair<String, String>, VBox> userConversationMap = new HashMap<>();
     private List<MessageGroup> messageGroupList = new ArrayList<>();
     private Map<MessageGroup, VBox> groupConversationMap = new HashMap<>();
+    private boolean isDataBackedUp = false;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -111,21 +112,61 @@ public class ClientController2 implements Initializable {
                 //Backup old conversation
                 Pair<String, String> pairOld = new Pair<>(userId, oldVal);
                 VBox oldMessages = new VBox();
-                if (!userConversationMap.containsKey(pairOld)){
-                    oldMessages.getChildren().addAll(vBoxMessages.getChildren());
-                    userConversationMap.put(pairOld, oldMessages);
+                if (isDataBackedUp){
+                    System.out.println(userId + ": Backup last selected individual conversation(empty data) - " + oldVal);
+                    isDataBackedUp = false;
                 }else {
                     oldMessages.getChildren().addAll(vBoxMessages.getChildren());
-                    userConversationMap.replace(pairOld, oldMessages);
+                    if (!ProgramDummyDB.getUserWiseConversationMap().containsKey(pairOld)){
+                        ProgramDummyDB.getUserWiseConversationMap().put(pairOld, oldMessages);
+                    }else {
+                        ProgramDummyDB.getUserWiseConversationMap().replace(pairOld, oldMessages);
+                    }
+                    System.out.println(userId + ": Backup last selected individual conversation(data) - " + oldVal);
+                    vBoxMessages.getChildren().clear();
                 }
-                vBoxMessages.getChildren().clear();
             }
+//            else {
+//                //check into groupListView, is there anything to backup -> backup and clear selection
+//                if (groupListView.getSelectionModel().getSelectedItem() != null){
+//                    Pair<String, String> selectedGroupPair = new Pair<>(userId, groupListView.getSelectionModel().getSelectedItem().getGroupHash());
+//                    VBox vBox = new VBox();
+//                    vBox.getChildren().addAll(vBoxMessages.getChildren());
+//                    if (!ProgramDummyDB.getUserWiseConversationMap().containsKey(selectedGroupPair)){
+//                        ProgramDummyDB.getUserWiseConversationMap().put(selectedGroupPair, vBox);
+//                    }else {
+//                        ProgramDummyDB.getUserWiseConversationMap().replace(selectedGroupPair, vBox);
+//                    }
+//                    System.out.println(userId + ": Backup last selected group conversation(activeClientListView) - " + groupListView.getSelectionModel().getSelectedItem().getGroupName());
+//                    vBoxMessages.getChildren().clear();
+//                }
+//                groupListView.getSelectionModel().clearSelection();
+//            }
             //Restore new conversation
-            Pair<String, String> pairNew = new Pair<>(userId, newVal);
-            if (!userConversationMap.containsKey(pairNew)){
-                userConversationMap.put(pairNew, new VBox());
-            }else {
-                vBoxMessages.getChildren().addAll(userConversationMap.get(pairNew));
+            if (newVal != null) {
+                //check into groupListView, is there anything to back up -> backup and clear selection
+                if (groupListView.getSelectionModel().getSelectedItem() != null){
+                    Pair<String, String> selectedGroupPair = new Pair<>(userId, groupListView.getSelectionModel().getSelectedItem().getGroupHash());
+                    VBox vBox = new VBox();
+                    vBox.getChildren().addAll(vBoxMessages.getChildren());
+                    if (!ProgramDummyDB.getUserWiseConversationMap().containsKey(selectedGroupPair)){
+                        ProgramDummyDB.getUserWiseConversationMap().put(selectedGroupPair, vBox);
+                    }else {
+                        ProgramDummyDB.getUserWiseConversationMap().replace(selectedGroupPair, vBox);
+                    }
+                    System.out.println(userId + ": Backup last selected group conversation(activeClientListView) - " + groupListView.getSelectionModel().getSelectedItem().getGroupName());
+                    vBoxMessages.getChildren().clear();
+                    isDataBackedUp = true;
+                }
+                Pair<String, String> pairNew = new Pair<>(userId, newVal);
+                if (!ProgramDummyDB.getUserWiseConversationMap().containsKey(pairNew)) {
+                    ProgramDummyDB.getUserWiseConversationMap().put(pairNew, new VBox());
+                    System.out.println(userId + ": Restore selected individual conversation(empty data) - " + newVal);
+                } else {
+                    vBoxMessages.getChildren().addAll(ProgramDummyDB.getUserWiseConversationMap().get(pairNew));
+                    System.out.println(userId + ": Restore selected individual conversation(data) - " + newVal);
+                }
+
             }
             //For clear and focus message text field for every client selection.
             Platform.runLater(() -> {
@@ -140,7 +181,65 @@ public class ClientController2 implements Initializable {
             }else {
                 labelInfo.setText("Connected to Server.");
             }
-
+            //Backup old conversation
+            if (oldVal != null){
+                Pair<String, String> pairOld = new Pair<>(userId, oldVal.getGroupHash());
+                VBox oldMessages = new VBox();
+                if (isDataBackedUp){
+                    System.out.println(userId + ": Backup last selected group conversation(empty data) - " + oldVal.getGroupName());
+                    isDataBackedUp = false;
+                }else {
+                    oldMessages.getChildren().addAll(vBoxMessages.getChildren());
+                    if (!ProgramDummyDB.getUserWiseConversationMap().containsKey(pairOld)){
+                        ProgramDummyDB.getUserWiseConversationMap().put(pairOld, oldMessages);
+                    }else {
+                        ProgramDummyDB.getUserWiseConversationMap().replace(pairOld, oldMessages);
+                    }
+                    System.out.println(userId + ": Backup last selected group conversation(data) - " + oldVal.getGroupName());
+                    vBoxMessages.getChildren().clear();
+                }
+            }
+//            else {
+//                //check into activeClientListView, is there anything to back up -> backup and clear selection
+//                if (activeClientListView.getSelectionModel().getSelectedItem() != null){
+//                    Pair<String, String> selectedClientPair = new Pair<>(userId, activeClientListView.getSelectionModel().getSelectedItem());
+//                    VBox vBox = new VBox();
+//                    vBox.getChildren().addAll(vBoxMessages.getChildren());
+//                    if (!ProgramDummyDB.getUserWiseConversationMap().containsKey(selectedClientPair)){
+//                        ProgramDummyDB.getUserWiseConversationMap().put(selectedClientPair, vBox);
+//                    }else {
+//                        ProgramDummyDB.getUserWiseConversationMap().replace(selectedClientPair, vBox);
+//                    }
+//                    System.out.println(userId + ": Backup last selected individual conversation(groupListView) - " + activeClientListView.getSelectionModel().getSelectedItem());
+//                    vBoxMessages.getChildren().clear();
+//                }
+//                groupListView.getSelectionModel().clearSelection();
+//            }
+            //Restore new conversation
+            if (newVal != null){
+                //check into activeClientListView, is there anything to back up -> backup and clear selection
+                if (activeClientListView.getSelectionModel().getSelectedItem() != null){
+                    Pair<String, String> selectedClientPair = new Pair<>(userId, activeClientListView.getSelectionModel().getSelectedItem());
+                    VBox vBox = new VBox();
+                    vBox.getChildren().addAll(vBoxMessages.getChildren());
+                    if (!ProgramDummyDB.getUserWiseConversationMap().containsKey(selectedClientPair)){
+                        ProgramDummyDB.getUserWiseConversationMap().put(selectedClientPair, vBox);
+                    }else {
+                        ProgramDummyDB.getUserWiseConversationMap().replace(selectedClientPair, vBox);
+                    }
+                    System.out.println(userId + ": Backup last selected individual conversation(groupListView) - " + activeClientListView.getSelectionModel().getSelectedItem());
+                    vBoxMessages.getChildren().clear();
+                    isDataBackedUp = true;
+                }
+                Pair<String, String> pairNew = new Pair<>(userId, newVal.getGroupHash());
+                if (!ProgramDummyDB.getUserWiseConversationMap().containsKey(pairNew)){
+                    ProgramDummyDB.getUserWiseConversationMap().put(pairNew, new VBox());
+                    System.out.println(userId + ": Restore selected group conversation(empty data) - " + newVal.getGroupName());
+                }else {
+                    vBoxMessages.getChildren().addAll(ProgramDummyDB.getUserWiseConversationMap().get(pairNew));
+                    System.out.println(userId + ": Restore selected group conversation(data) - " + newVal.getGroupName());
+                }
+            }
             //For clear and focus message text field for every group selection.
             Platform.runLater(() -> {
                 tf_message.clear();
@@ -159,6 +258,34 @@ public class ClientController2 implements Initializable {
                 groupListView.getSelectionModel().clearSelection();
             }
         });
+
+//        if (groupListView.getSelectionModel().getSelectedItem() != null){
+//            System.out.println(userId + ": Group selected - " + groupListView.getSelectionModel().getSelectedItem().getGroupName());
+//        }
+//        if (activeClientListView.getSelectionModel().getSelectedItem() != null){
+//            System.out.println(userId + ": Individual conversation selected - " + activeClientListView.getSelectionModel().getSelectedItem());
+//        }
+
+//        if (!activeClientListView.isFocused() && groupListView.getSelectionModel().getSelectedItem() != null){
+//            if (activeClientListView.getSelectionModel().getSelectedItem() != null){
+//                Pair<String, String> pair = new Pair<>(userId, activeClientListView.getSelectionModel().getSelectedItem());
+//                VBox vBox = new VBox();
+//                vBox.getChildren().addAll(vBoxMessages.getChildren());
+//                ProgramDummyDB.getUserWiseConversationMap().replace(pair, vBox);
+//                vBoxMessages.getChildren().clear();
+//            }
+//            //activeClientListView.getSelectionModel().clearSelection();
+//        }
+//        if (!groupListView.isFocused() && activeClientListView.getSelectionModel().getSelectedItem() != null){
+//            if(groupListView.getSelectionModel().getSelectedItem() != null){
+//                Pair<String, String> pair = new Pair<>(userId, groupListView.getSelectionModel().getSelectedItem().getGroupHash());
+//                VBox vBox = new VBox();
+//                vBox.getChildren().addAll(vBoxMessages.getChildren());
+//                ProgramDummyDB.getUserWiseConversationMap().replace(pair, vBox);
+//                vBoxMessages.getChildren().clear();
+//            }
+//            //groupListView.getSelectionModel().clearSelection();
+//        }
 
         groupListView.setCellFactory(messageGroupListView -> new ListCell<MessageGroup>(){
             private InputStream imageStream = this.getClass().getResourceAsStream("/com/application/javafx_chat_messenger_application/Images/team-fill.png");
@@ -254,16 +381,15 @@ public class ClientController2 implements Initializable {
                         });
                     } else if (message.getMessageType().equals(MessageType.PLAIN)) {
                         System.out.println("Client: Plain general message received successfully.\n" + message.toString());
-
                         Pair<String, String> msgReceivedConversationPair = new Pair<>(userId, message.getSenderId());
                         if (activeClientListView.getSelectionModel().getSelectedItem() != null &&
                                 activeClientListView.getSelectionModel().getSelectedItem().equals(message.getSenderId())){
                             //Update the message box UI
                             updateMessagesUI(message, Pos.CENTER_LEFT, true);
                         }else {
-                            //Store message in conversation map VBox
-                            if (!userConversationMap.containsKey(msgReceivedConversationPair)){
-                                userConversationMap.put(msgReceivedConversationPair, new VBox()); //adding new user conversation map
+                            //Store message in userWiseConversationMap
+                            if (!ProgramDummyDB.getUserWiseConversationMap().containsKey(msgReceivedConversationPair)){
+                                ProgramDummyDB.getUserWiseConversationMap().put(msgReceivedConversationPair, new VBox()); //adding new user conversation map
                             }
                             updateMessagesUI(message, Pos.CENTER_LEFT, false);
                         }
@@ -271,14 +397,26 @@ public class ClientController2 implements Initializable {
                     } else if (message.getMessageType().equals(MessageType.GROUP_CREATION)) {
                         MessageGroup messageGroupDetails = (MessageGroup) message.getDataObject();
                         ProgramDummyDB.checkUserAndAddGroup(userId, messageGroupDetails);
-                        groupConversationMap.put(messageGroupDetails, new VBox());
+                        ProgramDummyDB.getUserWiseConversationMap().put(new Pair<>(userId, messageGroupDetails.getGroupHash()), new VBox());
+                        //groupConversationMap.put(messageGroupDetails, new VBox());
                         Platform.runLater(() -> {
                             groupListView.getItems().add(messageGroupDetails);
                             labelInfo.setText("New message group is created: " + messageGroupDetails.getGroupName());
                         });
                     } else if (message.getMessageType().equals(MessageType.GROUP_MESSAGE)) {
                         System.out.println("Client: Group message received successfully.\n" + message.toString());
-                        updateMessagesUI(message, Pos.CENTER_LEFT, true);
+                        Pair<String, String> groupMsgReceivedPair = new Pair<>(userId, message.getConversationHash());
+                        MessageGroup msgGroup = groupListView.getSelectionModel().getSelectedItem();
+                        if (msgGroup != null && message.getConversationHash().equals(msgGroup.getGroupHash())){
+                            //Update the message box UI instantly
+                            updateMessagesUI(message, Pos.CENTER_LEFT, true);
+                        } else {
+                            //Store message in userWiseConversationMap
+                            if (!ProgramDummyDB.getUserWiseConversationMap().containsKey(groupMsgReceivedPair)){
+                                ProgramDummyDB.getUserWiseConversationMap().put(groupMsgReceivedPair, new VBox());
+                            }
+                            updateMessagesUI(message, Pos.CENTER_LEFT, false);
+                        }
                     }
                 } catch (IOException | ClassNotFoundException e) {
                     e.printStackTrace();
@@ -333,10 +471,15 @@ public class ClientController2 implements Initializable {
                 vBoxMessages.getChildren().add(hBox);
             });
         }else {
-            Pair<String, String> msgReceivedConversationPair = new Pair<>(userId, message.getSenderId());
-            userConversationMap.get(msgReceivedConversationPair).getChildren().add(hBox);
+            Pair<String, String> msgReceivedConversationPair;
+            if (message.getMessageType().equals(MessageType.PLAIN)){
+                msgReceivedConversationPair = new Pair<>(userId, message.getSenderId());
+                ProgramDummyDB.getUserWiseConversationMap().get(msgReceivedConversationPair).getChildren().add(hBox);
+            } else if (message.getMessageType().equals(MessageType.GROUP_MESSAGE)) {
+                msgReceivedConversationPair = new Pair<>(userId, message.getConversationHash());
+                ProgramDummyDB.getUserWiseConversationMap().get(msgReceivedConversationPair).getChildren().add(hBox);
+            }
         }
-
     }
 
     @FXML
@@ -358,6 +501,7 @@ public class ClientController2 implements Initializable {
             MessageGroup messageGroup = groupListView.getSelectionModel().getSelectedItem();
             if (!tf_message.getText().isEmpty()) {
                 Message message = new Message(userId, "Group-Member", tf_message.getText(), new Date(), MessageType.GROUP_MESSAGE);
+                message.setConversationHash(messageGroup.getGroupHash());
                 message.setDataObject(messageGroup);
                 sendMessageToServer(message);
                 updateMessagesUI(message, Pos.CENTER_RIGHT, true);
@@ -403,7 +547,8 @@ public class ClientController2 implements Initializable {
                 MessageGroup messageGroupDetails = new MessageGroup("gId-"+gName, gName, "gHash-"+gName, new Date(),
                         groupMemberList, groupAdminList);
                 ProgramDummyDB.checkUserAndAddGroup(userId, messageGroupDetails);
-                groupConversationMap.put(messageGroupDetails, new VBox());
+                ProgramDummyDB.getUserWiseConversationMap().put(new Pair<>(userId, messageGroupDetails.getGroupHash()), new VBox());
+                //groupConversationMap.put(messageGroupDetails, new VBox());
                 groupListView.getItems().add(messageGroupDetails);
                 labelInfo.setText("New message group is created: " + gName);
                 Message groupCreationMessage = new Message(userId, "SERVER", "New group creation",
