@@ -3,6 +3,7 @@ package com.application.javafx_chat_messenger_application.client;
 import com.application.javafx_chat_messenger_application.model.Message;
 import com.application.javafx_chat_messenger_application.model.MessageGroup;
 import com.application.javafx_chat_messenger_application.model.MessageType;
+import com.application.javafx_chat_messenger_application.model.ProgramDummyDB;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -75,6 +76,7 @@ public class ClientController2 implements Initializable {
     private ObjectOutputStream objectOutputStream;
     private Map<Pair<String, String>, VBox> userConversationMap = new HashMap<>();
     private List<MessageGroup> messageGroupList = new ArrayList<>();
+    private Map<MessageGroup, VBox> groupConversationMap = new HashMap<>();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -100,9 +102,6 @@ public class ClientController2 implements Initializable {
             }
         });
         activeClientListView.getSelectionModel().selectedItemProperty().addListener( (observable, oldVal, newVal) -> {
-
-//            System.out.println("Old value: " + oldVal);
-//            System.out.println("New Value: " + newVal);
             if (newVal != null){
                 labelInfo.setText("Connected to Server  -  Chat with: " + activeClientListView.getSelectionModel().getSelectedItem());
             }else {
@@ -128,6 +127,11 @@ public class ClientController2 implements Initializable {
             }else {
                 vBoxMessages.getChildren().addAll(userConversationMap.get(pairNew));
             }
+            //For clear and focus message text field for every client selection.
+            Platform.runLater(() -> {
+                tf_message.clear();
+                tf_message.requestFocus();
+            });
         });
 
         groupListView.getSelectionModel().selectedItemProperty().addListener((observable, oldVal, newVal) -> {
@@ -136,16 +140,22 @@ public class ClientController2 implements Initializable {
             }else {
                 labelInfo.setText("Connected to Server.");
             }
+
+            //For clear and focus message text field for every group selection.
+            Platform.runLater(() -> {
+                tf_message.clear();
+                tf_message.requestFocus();
+            });
         });
 
-        groupListView.focusedProperty().addListener(observable -> {
-            if (groupListView.isFocused()){
+        groupListView.focusedProperty().addListener((observable, oldVal, newVal) -> {
+            if (newVal){
                 activeClientListView.getSelectionModel().clearSelection();
             }
         });
 
-        activeClientListView.focusedProperty().addListener(observable -> {
-            if (activeClientListView.isFocused()){
+        activeClientListView.focusedProperty().addListener((observable, oldVal, newVal) -> {
+            if (newVal){
                 groupListView.getSelectionModel().clearSelection();
             }
         });
@@ -260,7 +270,8 @@ public class ClientController2 implements Initializable {
 
                     } else if (message.getMessageType().equals(MessageType.GROUP_CREATION)) {
                         MessageGroup messageGroupDetails = (MessageGroup) message.getDataObject();
-                        messageGroupList.add(messageGroupDetails);
+                        ProgramDummyDB.checkUserAndAddGroup(userId, messageGroupDetails);
+                        groupConversationMap.put(messageGroupDetails, new VBox());
                         Platform.runLater(() -> {
                             groupListView.getItems().add(messageGroupDetails);
                             labelInfo.setText("New message group is created: " + messageGroupDetails.getGroupName());
@@ -391,7 +402,8 @@ public class ClientController2 implements Initializable {
                 System.out.println("New group is created.");
                 MessageGroup messageGroupDetails = new MessageGroup("gId-"+gName, gName, "gHash-"+gName, new Date(),
                         groupMemberList, groupAdminList);
-                messageGroupList.add(messageGroupDetails);
+                ProgramDummyDB.checkUserAndAddGroup(userId, messageGroupDetails);
+                groupConversationMap.put(messageGroupDetails, new VBox());
                 groupListView.getItems().add(messageGroupDetails);
                 labelInfo.setText("New message group is created: " + gName);
                 Message groupCreationMessage = new Message(userId, "SERVER", "New group creation",

@@ -62,8 +62,7 @@ public class ServerController2 implements Initializable {
 //            e.printStackTrace();
 //            System.out.println("Error creating Server ... ");
 //        }
-        activeClientList = new HashMap<>();
-        activeClientIds = new ArrayList<>();
+
         loadUsers();
         try {
             serverSocket = new ServerSocket(1234);
@@ -134,10 +133,10 @@ public class ServerController2 implements Initializable {
                         if (message.getMessageType().equals(MessageType.CONNECTION)) {
                             //Receive Initial message & store this new client to active user list.
                             clientId = message.getSenderId();
-                            activeClientList.put(message.getSenderId(), skt);
-                            activeClientIds.add(message.getSenderId());
+                            ProgramDummyDB.getActiveClientList().put(message.getSenderId(), skt);
+                            ProgramDummyDB.getActiveClientIds().add(message.getSenderId());
                             System.out.println("Connection message-server: " + message);
-                            System.out.println("Active Client Number: " + activeClientList.size());
+                            System.out.println("Active Client Number: " + ProgramDummyDB.getActiveClientList().size());
                             HBox hBox = new HBox(20);
                             Text text = new Text(message.getSenderId());
                             Button button = new Button("X");
@@ -169,14 +168,14 @@ public class ServerController2 implements Initializable {
                             activeClientMessage.setMessageType(MessageType.ACTIVE_CLIENTS);
                             activeClientMessage.setSenderId("SERVER");
                             activeClientMessage.setReceiverId(message.getSenderId());
-                            activeClientMessage.setDataObject(activeClientIds);
+                            activeClientMessage.setDataObject(ProgramDummyDB.getActiveClientIds());
                             dispatchMessageToAllClients(activeClientMessage);
                         } else if (message.getMessageType().equals(MessageType.PLAIN) && isValidMessage(message)) {
                             System.out.println(message.toString());
                             // send this message to sender socket client.
-                            if (activeClientList.containsKey(message.getReceiverId())) {
+                            if (ProgramDummyDB.getActiveClientList().containsKey(message.getReceiverId())) {
                                 //send message to specific client immediately
-                                Socket skt = activeClientList.get(message.getReceiverId());
+                                Socket skt = ProgramDummyDB.getActiveClientList().get(message.getReceiverId());
                                 objectOutputStream = new ObjectOutputStream(skt.getOutputStream()); //(ObjectOutputStream) skt.getOutputStream(); -- this process does not work
                                 objectOutputStream.writeObject(message);
                                 objectOutputStream.flush();
@@ -203,8 +202,8 @@ public class ServerController2 implements Initializable {
                         System.out.println("Some how client is disconnected.");
                         if (clientId != null){
                             System.out.println("Update server with active client list & also UI");
-                            activeClientList.remove(clientId);
-                            activeClientIds.remove(clientId);
+                            ProgramDummyDB.getActiveClientList().remove(clientId);
+                            ProgramDummyDB.getActiveClientIds().remove(clientId);
                             for (Node n : activeClientsBox.getChildren()) {
                                 HBox hBox = (HBox) n;
                                 Text text = (Text) hBox.getChildren().get(0);
@@ -236,7 +235,7 @@ public class ServerController2 implements Initializable {
 
             private void dispatchMessageToAllClients(Message message) throws IOException {
                 System.out.println("Server: updated active client list sent to all clients.");
-                for (var activeClient : activeClientList.entrySet()) {
+                for (var activeClient : ProgramDummyDB.getActiveClientList().entrySet()) {
                     Socket s = activeClient.getValue();
                     objectOutputStream = new ObjectOutputStream(s.getOutputStream());
                     objectOutputStream.writeObject(message);
@@ -268,9 +267,8 @@ public class ServerController2 implements Initializable {
         MessageGroup messageGroupDetails = (MessageGroup) message.getDataObject();
         List<String> participantIdList = messageGroupDetails.getParticipantIdList();
         for (String id : participantIdList) {
-            if (!id.equals(message.getSenderId()) && activeClientList.containsKey(id)){
-                //Send this group information to all group member
-                Socket skt = activeClientList.get(id);
+            if (!id.equals(message.getSenderId()) && ProgramDummyDB.getActiveClientList().containsKey(id)){
+                Socket skt = ProgramDummyDB.getActiveClientList().get(id);
                 objectOutputStream = new ObjectOutputStream(skt.getOutputStream());
                 objectOutputStream.writeObject(message);
                 objectOutputStream.flush();
