@@ -313,6 +313,26 @@ public class ClientController2 implements Initializable {
                 }
             }
         });
+
+        activeClientListView.setCellFactory(stringListView -> new ListCell<String>(){
+            private InputStream imageStream = this.getClass().getResourceAsStream("/com/application/javafx_chat_messenger_application/Images/user-fill.png");
+            private Image userIconImage = new Image(imageStream);
+            private ImageView imageView = new ImageView();
+            @Override
+            protected void updateItem(String str, boolean empty) {
+                super.updateItem(str, empty);
+                if (empty || str == null){
+                    setGraphic(null);
+                } else {
+                    setText(str);
+                    imageView.setFitHeight(15);
+                    imageView.setFitWidth(15);
+                    imageView.setPreserveRatio(true);
+                    imageView.setImage(userIconImage);
+                    setGraphic(imageView);
+                }
+            }
+        });
     }
 
     private void communicateWithServer(Socket socket) {
