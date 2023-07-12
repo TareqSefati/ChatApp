@@ -12,7 +12,7 @@ public class UserController {
         List<User> userList = new ArrayList<>();
         for (int i = 1; i <= userNumber; i++) {
             //(String username, String userId, String email, String password)
-            User user = new User("username-"+i, "userId-"+i, "test@gmail.com", "password");
+            User user = new User("username-"+i, "userid-"+i, "test@gmail.com", "password");
             userList.add(user);
         }
         return userList;

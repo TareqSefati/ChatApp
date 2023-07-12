@@ -10,6 +10,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
+<?import javafx.scene.control.PasswordField?>
 <VBox alignment="CENTER_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="480.0" spacing="20.0" styleClass="white-pan" stylesheets="@loginUiStyle.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.application.javafx_chat_messenger_application.client.SignInController">
    <children>
       <Label text="Sign In" textFill="#da7a7a">
@@ -42,11 +43,11 @@
       </HBox>
       <HBox layoutX="25.0" layoutY="263.0" prefHeight="45.0" prefWidth="200.0" styleClass="tf-box">
          <children>
-            <TextField fx:id="userPassword" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="Password" styleClass="tf" HBox.hgrow="ALWAYS">
+            <PasswordField fx:id="userPassword" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="Password" styleClass="tf" HBox.hgrow="ALWAYS">
                <font>
                   <Font size="15.0" />
                </font>
-            </TextField>
+            </PasswordField>
             <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                <HBox.margin>
                   <Insets right="5.0" top="8.0" />
@@ -75,6 +76,15 @@
                   <Font size="15.0" />
                </font>
             </JFXButton>
+         </children>
+      </HBox>
+      <HBox alignment="CENTER" prefHeight="25.0" prefWidth="200.0">
+         <children>
+            <Label fx:id="labelErrorMsg" prefHeight="25.0" style="-fx-text-fill: #F78C7B;" textFill="WHITE">
+               <font>
+                  <Font size="13.0" />
+               </font>
+            </Label>
          </children>
       </HBox>
    </children>

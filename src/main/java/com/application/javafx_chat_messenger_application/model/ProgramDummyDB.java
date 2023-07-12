@@ -55,4 +55,16 @@ public class ProgramDummyDB {
     public static Map<Pair<String, String>, VBox> getUserWiseConversationMap() {
         return userWiseConversationMap;
     }
+
+    //GENERATING DUMMY USERS DATA:
+    private static List<User> userList = UserController.generateDummyUsers(10);
+
+    public static boolean findUser(String id, String password) {
+        for (User user : userList) {
+            if (id.equals(user.getUserId()) && password.equals(user.getPassword())) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
