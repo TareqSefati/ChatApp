@@ -10,6 +10,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -56,6 +57,7 @@ public class SignInController {
             stage.setResizable(false);
             loginStage.hide();
             stage.setScene(scene);
+            stage.getIcons().add(new Image(this.getClass().getResourceAsStream("/com/application/javafx_chat_messenger_application/Images/Chatting-icon.png")));
             stage.show();
             labelErrorMsg.setText("Login Successful!");
             System.out.println("Login Successful!");

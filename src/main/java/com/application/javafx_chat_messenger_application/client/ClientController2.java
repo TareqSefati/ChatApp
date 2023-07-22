@@ -9,10 +9,12 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -20,10 +22,12 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Pair;
 
 import java.io.IOException;
@@ -393,6 +397,15 @@ public class ClientController2 implements Initializable {
                                 activeClientListView.getItems().add(activeClientIds.get(activeClientIds.size() - 1));
                             }
                         });
+                    } else if (message.getMessageType().equals(MessageType.LOGOUT_CLIENT)) {
+                        //working here.................
+                        System.out.println("Client: Logging out this client.");
+                        System.out.println(message.toString());
+                        //Database cleanup(if necessary)
+                        Platform.runLater(() -> {
+                            ap_main.getScene().getWindow().hide();
+                            openLoginUI();
+                        });
                     } else if (message.getMessageType().equals(MessageType.REMOVE_CLIENT)) {
                         System.out.println("Client: Removing a client from active client list.");
                         Platform.runLater(() -> {
@@ -502,6 +515,21 @@ public class ClientController2 implements Initializable {
         }
     }
 
+    private void openLoginUI() {
+        try {
+            Stage primaryStage = new Stage();
+            Parent root = FXMLLoader.load(getClass().getResource("login.fxml"));
+            Scene scene = new Scene(root);
+            scene.setFill(Color.TRANSPARENT);
+            primaryStage.initStyle(StageStyle.TRANSPARENT);
+            primaryStage.setScene(scene);
+            primaryStage.getIcons().add(new Image(this.getClass().getResourceAsStream("/com/application/javafx_chat_messenger_application/Images/Chatting-icon.png")));
+            primaryStage.show();
+        }catch (IOException ex){
+            System.out.println("Client: Failed to open login ui.");
+            ex.printStackTrace();
+        }
+    }
     @FXML
     void sendMessage(ActionEvent event) {
         //activeClientListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);

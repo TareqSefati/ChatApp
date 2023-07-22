@@ -16,6 +16,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -28,7 +30,9 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.URL;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
 
 public class ServerController2 implements Initializable {
     @FXML
@@ -139,22 +143,45 @@ public class ServerController2 implements Initializable {
                             System.out.println("Active Client Number: " + ProgramDummyDB.getActiveClientList().size());
                             HBox hBox = new HBox(20);
                             Text text = new Text(message.getSenderId());
-                            Button button = new Button("X");
+                            Button button = new Button();
+                            ImageView iv = new ImageView(new Image(this.getClass().getResourceAsStream("/com/application/javafx_chat_messenger_application/Images/logout-box-r-fill.png")));
+                            iv.setFitHeight(15);
+                            iv.setFitWidth(15);
+                            button.setGraphic(iv);
                             hBox.getChildren().addAll(text, button);
 
                             //Updating active client list in server UI
                             Platform.runLater(new Runnable() {
                                 @Override
                                 public void run() {
-                                    labelInfo.setText("A new client is joined: " + socket.toString());
+                                    labelInfo.setText("A new client is joined: " + skt.toString());
                                     activeClientsBox.getChildren().add(hBox);
                                     // TODO: need to shutdown the client properly. throw a specific message based on that client program close the socket.
                                     button.setOnAction(actionEvent -> {
+                                        String deletedId = message.getSenderId();
                                         try {
-                                            socket.close();
+                                            //1. send message to client to logout itself
+                                            Message clientLogoutMsg = new Message();
+                                            clientLogoutMsg.setMessageType(MessageType.LOGOUT_CLIENT);
+                                            clientLogoutMsg.setSenderId("SERVER");
+                                            clientLogoutMsg.setReceiverId(deletedId);
+                                            objectOutputStream = new ObjectOutputStream(skt.getOutputStream());
+                                            objectOutputStream.writeObject(clientLogoutMsg);
+                                            objectOutputStream.flush();
+                                            System.out.println("Message is sent to a active client to logout itself.");
+
+                                            //2. Remove from program database
+                                            ProgramDummyDB.getActiveClientList().remove(deletedId);
+                                            ProgramDummyDB.getActiveClientIds().remove(deletedId);
+
+                                            //3. dispatch remove client message to all clients.
+                                            updateActiveClientListAfterRemovingClient(deletedId);
+
+                                            //4. close this socket
+                                            skt.close();
                                             activeClientsBox.getChildren().remove(hBox);
-                                            System.out.println("Shutdown:: " + socket.toString());
-                                            labelInfo.setText("Shutdown:: " + socket.toString());
+                                            System.out.println("Shutdown:: " + skt.toString());
+                                            labelInfo.setText("Shutdown:: " + skt.toString());
                                         } catch (IOException e) {
                                             e.printStackTrace();
                                             labelInfo.setText("Failed: Shutdown instruction sent to client!");
@@ -215,52 +242,56 @@ public class ServerController2 implements Initializable {
                                 }
                             }
                             //Send command to all clients to update their active client list.
-                            Message romoveClientMessage = new Message();
-                            romoveClientMessage.setMessageType(MessageType.REMOVE_CLIENT);
-                            romoveClientMessage.setSenderId("SERVER");
-                            romoveClientMessage.setReceiverId("");
-                            romoveClientMessage.setDataObject(clientId);
-                            try {
-                                dispatchMessageToAllClients(romoveClientMessage);
-                                System.out.println("Server: Success to Send command to all clients to update their active client list.");
-                            } catch (IOException ex) {
-                                System.out.println("Server: Failed to Send command to all clients to update their active client list.");
-                            }
+                            updateActiveClientListAfterRemovingClient(clientId);
                         }
                     }
                     e.printStackTrace();
                     System.out.println("Error receiving message from the Client!");
                 }
             }
-
-            private void dispatchMessageToAllClients(Message message) throws IOException {
-                System.out.println("Server: updated active client list sent to all clients.");
-                for (var activeClient : ProgramDummyDB.getActiveClientList().entrySet()) {
-                    Socket s = activeClient.getValue();
-                    objectOutputStream = new ObjectOutputStream(s.getOutputStream());
-                    objectOutputStream.writeObject(message);
-                    objectOutputStream.flush();
-                }
-            }
-
-            private boolean isFoundInClientList(String receiverId) {
-                return false;
-            }
-
-            private boolean isValidMessage(Message message) {
-                if (message.getSenderId() != null && !message.getSenderId().isEmpty()
-                        && message.getReceiverId() != null && !message.getReceiverId().isEmpty()
-                        && message.getMsg() != null && !message.getMsg().isEmpty()
-                        && message.getSentDateTime() != null && !message.getSenderId().equals(message.getReceiverId())) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-
         });
         communicateWithClientThread.setDaemon(true);
         communicateWithClientThread.start();
+    }
+
+    private void updateActiveClientListAfterRemovingClient(String removedClientId) {
+        Message removeClientMessage = new Message();
+        removeClientMessage.setMessageType(MessageType.REMOVE_CLIENT);
+        removeClientMessage.setSenderId("SERVER");
+        removeClientMessage.setReceiverId("");
+        removeClientMessage.setDataObject(removedClientId);
+        dispatchMessageToAllClients(removeClientMessage);
+    }
+
+    private void dispatchMessageToAllClients(Message message) {
+        try {
+            System.out.println("Server: Given message is sending(all clients).......");
+            for (var activeClient : ProgramDummyDB.getActiveClientList().entrySet()) {
+                Socket s = activeClient.getValue();
+                objectOutputStream = new ObjectOutputStream(s.getOutputStream());
+                objectOutputStream.writeObject(message);
+                objectOutputStream.flush();
+            }
+            System.out.println("Server: Successfully given message is sent to all clients.");
+        }catch (IOException ex){
+            System.out.println("Server: Failed to send given message to all clients!!!");
+            ex.printStackTrace();
+        }
+    }
+
+    private boolean isValidMessage(Message message) {
+        if (message.getSenderId() != null && !message.getSenderId().isEmpty()
+                && message.getReceiverId() != null && !message.getReceiverId().isEmpty()
+                && message.getMsg() != null && !message.getMsg().isEmpty()
+                && message.getSentDateTime() != null && !message.getSenderId().equals(message.getReceiverId())) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private boolean isFoundInClientList(String receiverId) {
+        return false;
     }
 
     private void sendToGroupMember(Message message) throws IOException {
