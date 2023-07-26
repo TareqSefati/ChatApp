@@ -57,14 +57,18 @@ public class ProgramDummyDB {
     }
 
     //GENERATING DUMMY USERS DATA:
-    private static List<User> userList = UserController.generateDummyUsers(10);
+    private static List<User> userList = new ArrayList<>(); //UserController.generateDummyUsers(10);
 
-    public static boolean findUser(String id, String password) {
+    public static List<User> getUserList() {
+        return userList;
+    }
+
+    public static User findUser(String email, String password) {
         for (User user : userList) {
-            if (id.equals(user.getUserId()) && password.equals(user.getPassword())) {
-                return true;
+            if (email.equals(user.getEmail()) && password.equals(user.getPassword())) {
+                return user;
             }
         }
-        return false;
+        return null;
     }
 }

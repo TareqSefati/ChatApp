@@ -1,23 +1,53 @@
 .list-view .list-cell:even {
-    /*-fx-background-color: white;*/
+    /*-fx-background-color: #636566;*/
 
 }
 
 .list-view .list-cell:odd {
-   /* -fx-background-color: white;
-*/
+    /*-fx-background-color: #636566;*/
 }
+
+.list-view .list-cell {
+   /*-fx-background-color: #636566;*/
+   /*-fx-background-color: white;*/
+   /*-fx-padding: 3px ;*/
+}
+.list-view {
+    -fx-padding: 0px 5px 0px 5px ;
+    /*-fx-background-color: darkred ;*/
+}
+
+.list-cell {
+    /*-fx-padding: 2px ;*/
+    /*-fx-background-color: transparent, -fx-background ;*/
+    -fx-background-color: transparent;
+    -fx-background-radius: 10px;
+    /*-fx-text-fill: #F4F5F6;*/
+    /*-fx-background-insets: 0px, 2px ;*/
+}
+
+/*.list-cell:empty {
+    -fx-padding: 2px ;
+    -fx-background-color: transparent ;
+    -fx-background-insets: 0 ;
+}*/
 
 .list-cell:filled:hover {
     /*-fx-view-order: -1;
     -fx-effect: dropshadow(gaussian, #67676D, 12, 0.05, 0.0, 2); */
-    -fx-background-color: #A8ADB3;
-    -fx-text-fill: #F4F5F6;
+    -fx-background-color: #8b8d8d; /*#26282E;/*#A8ADB3;*/
+    /*-fx-background-radius: 30px;*/
+    /*-fx-border-color: #1E1F22;
+    -fx-border-radius: 10px;
+    -fx-border-width: 2px;*/
+    /*-fx-text-fill: #F4F5F6;*/
 }
 
 .list-cell:filled:selected {
-    -fx-background-color: #0059B8;
-    -fx-text-fill: white;
+    -fx-background-color: #8b8d8d;
+    -fx-border-color: #1E1F22;
+    -fx-border-radius: 10px;
+    -fx-border-width: 2px;
 }
 /*.list-cell:filled:hover {
     -fx-background-color: transparent;
@@ -44,3 +74,36 @@
     -fx-background-color: #0093ff;
     -fx-text-fill: white;
 }*/
+.dark-gray-background{
+	-fx-background-color: #46474A;
+}
+
+.gray-background{
+	-fx-background-color: #636566;
+}
+
+.transparent-background{
+	-fx-background-color: rgba(0,0,0,0);
+}
+
+.radius{
+	-fx-background-radius: 100px;
+}
+
+.light-gray-background{
+	-fx-background-color: #DADADA;
+}
+
+.incoming-bubble{
+	-fx-background-color: #FFFFFF;
+	-fx-background-radius: 20px;
+}
+
+.outgoing-bubble{
+	-fx-background-color: #50C984;
+	-fx-background-radius: 20px;
+}
+
+.selected:hover{
+	-fx-opacity: 0.75;
+}

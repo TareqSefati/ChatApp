@@ -1,6 +1,8 @@
 package com.application.javafx_chat_messenger_application.client;
 
 import com.application.javafx_chat_messenger_application.model.ProgramDummyDB;
+import com.application.javafx_chat_messenger_application.model.User;
+import com.application.javafx_chat_messenger_application.util.PasswordUtil;
 import com.jfoenix.controls.JFXButton;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -9,6 +11,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
@@ -22,7 +25,7 @@ public class SignInController {
     private TextField userIdOrEmail;
 
     @FXML
-    private TextField userPassword;
+    private PasswordField userPassword;
 
     @FXML
     private JFXButton btnForgetPassword;
@@ -46,10 +49,11 @@ public class SignInController {
     void signInProcess(ActionEvent event) throws IOException {
         labelErrorMsg.setText("");
     	System.out.println("Sign in process goes here...");
-        String id = userIdOrEmail.getText();
-        String password = userPassword.getText();
-        if (validateUser(id, password)) {
-            root = FXMLLoader.load(getClass().getResource("clientUI.fxml"));
+        String email = userIdOrEmail.getText();
+        String password = PasswordUtil.hashPassword(userPassword.getText());
+        User user = getUser(email, password);
+        if (user != null) {
+            root = FXMLLoader.load(getClass().getResource("clientUI1.fxml"));
             scene = new Scene(root);
             Stage loginStage = (Stage)((Node)event.getSource()).getScene().getWindow();
             stage = new Stage();
@@ -67,11 +71,11 @@ public class SignInController {
         }
     }
 
-    private boolean validateUser(String id, String password) {
-        if (!id.isEmpty() && !password.isEmpty()){
-            return ProgramDummyDB.findUser(id, password);
+    private User getUser(String email, String password) {
+        if (!email.isEmpty() && !password.isEmpty()){
+            return ProgramDummyDB.findUser(email, password);
         }
-        return false;
+        return null;
     }
 
 }

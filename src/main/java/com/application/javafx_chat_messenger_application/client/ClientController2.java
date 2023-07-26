@@ -19,9 +19,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
@@ -44,7 +43,7 @@ import java.util.*;
  */
 public class ClientController2 implements Initializable {
     @FXML
-    private AnchorPane ap_main;
+    private BorderPane ap_main;
 
     @FXML
     private ScrollPane sp_main;
@@ -75,6 +74,30 @@ public class ClientController2 implements Initializable {
 
     @FXML
     private Label labelInfo;
+    @FXML
+    private ImageView btnMessage;
+
+    @FXML
+    private ImageView btnGroup;
+
+    @FXML
+    private ImageView btnUserProfile;
+
+    @FXML
+    private ImageView btnSetting;
+
+    @FXML
+    private ImageView btnExit;
+
+    @FXML
+    private StackPane spConversation;
+
+    @FXML
+    private Pane groupChatPane;
+
+    @FXML
+    private Pane individualChatPane;
+
     private Socket socket;
     private static String userId;
     private ObjectOutputStream objectOutputStream;
@@ -295,25 +318,27 @@ public class ClientController2 implements Initializable {
             private InputStream imageStream = this.getClass().getResourceAsStream("/com/application/javafx_chat_messenger_application/Images/team-fill.png");
             private Image groupIconImage = new Image(imageStream);
             private ImageView imageView = new ImageView();
-            private Label groupName = new Label();
-            private HBox layout = new HBox(10); //todo: further UI development by adding layout in list view
+            private Label labelGroupName = new Label();
             @Override
             protected void updateItem(MessageGroup messageGroup, boolean empty) {
                 super.updateItem(messageGroup, empty);
-//                layout.setAlignment(Pos.CENTER);
-//                layout.setStyle("-fx-background-color: green;");
+                HBox hBox = new HBox(5);
+                hBox.setAlignment(Pos.CENTER_LEFT);
+                hBox.setPrefHeight(40);
+                labelGroupName.setStyle("-fx-text-fill: #F4F5F6;" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-font-size: 14px;");
+                labelGroupName.setPrefSize(180, 40);
                 if (empty || messageGroup == null){
                     setGraphic(null);
                 } else {
-                    setText(messageGroup.getGroupName());
-//                    groupName.setText(messageGroup.getGroupName());
-                    imageView.setFitHeight(15);
-                    imageView.setFitWidth(15);
+                    labelGroupName.setText(messageGroup.getGroupName());
+                    imageView.setFitHeight(30);
+                    imageView.setFitWidth(30);
                     imageView.setPreserveRatio(true);
                     imageView.setImage(groupIconImage);
-//                    layout.getChildren().addAll(imageView, groupName);
-                    setGraphic(imageView);
-                    //setStyle("-fx-background-color: green;");
+                    hBox.getChildren().addAll(imageView, labelGroupName);
+                    setGraphic(hBox);
                 }
             }
         });
@@ -322,18 +347,28 @@ public class ClientController2 implements Initializable {
             private InputStream imageStream = this.getClass().getResourceAsStream("/com/application/javafx_chat_messenger_application/Images/user-fill.png");
             private Image userIconImage = new Image(imageStream);
             private ImageView imageView = new ImageView();
+            private Label labelUsername = new Label();
             @Override
             protected void updateItem(String str, boolean empty) {
                 super.updateItem(str, empty);
+                HBox hBox = new HBox();
+                hBox.setAlignment(Pos.CENTER_LEFT);
+                hBox.setPrefHeight(50);
+                labelUsername.setStyle("-fx-text-fill: #F4F5F6;" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-font-size: 14px;");
+                labelUsername.setPrefSize(180, 40);
                 if (empty || str == null){
                     setGraphic(null);
                 } else {
-                    setText(str);
-                    imageView.setFitHeight(15);
-                    imageView.setFitWidth(15);
+                    //setText(str);
+                    labelUsername.setText(str);
+                    imageView.setFitHeight(30);
+                    imageView.setFitWidth(30);
                     imageView.setPreserveRatio(true);
                     imageView.setImage(userIconImage);
-                    setGraphic(imageView);
+                    hBox.getChildren().addAll(imageView, labelUsername);
+                    setGraphic(hBox);
                 }
             }
         });
@@ -632,5 +667,76 @@ public class ClientController2 implements Initializable {
 //            }
 //
 //        }
+    }
+
+    @FXML
+    void btnAttachmentOnClicked(MouseEvent event) {
+
+    }
+
+    @FXML
+    void btnExitOnClicked(MouseEvent event) {
+        ap_main.getScene().getWindow().hide();
+        openLoginUI();
+    }
+
+    @FXML
+    void btnGroupOnClicked(MouseEvent event) {
+        resetLeftPanelButtonColorToGray();
+        btnGroup.setImage(new Image(getClass().getResourceAsStream("/com/application/javafx_chat_messenger_application/Images/team-fill-white.png")));
+        individualChatPane.setVisible(false);
+        groupChatPane.setVisible(true);
+    }
+
+    @FXML
+    void btnImojiOnClicked(MouseEvent event) {
+
+    }
+
+    @FXML
+    void btnMessageOnClicked(MouseEvent event) {
+        resetLeftPanelButtonColorToGray();
+        btnMessage.setImage(new Image(getClass().getResourceAsStream("/com/application/javafx_chat_messenger_application/Images/message-3-fill-white.png")));
+        groupChatPane.setVisible(false);
+        individualChatPane.setVisible(true);
+    }
+
+    @FXML
+    void btnOptionOnClicked(MouseEvent event) {
+
+    }
+
+    @FXML
+    void btnSendMessageOnClicked(MouseEvent event) {
+
+    }
+
+    @FXML
+    void btnSettingOnClicked(MouseEvent event) {
+        resetLeftPanelButtonColorToGray();
+        btnSetting.setImage(new Image(getClass().getResourceAsStream("/com/application/javafx_chat_messenger_application/Images/settings-3-fill-white.png")));
+    }
+
+    @FXML
+    void btnUserProfileOnClicked(MouseEvent event) {
+        resetLeftPanelButtonColorToGray();
+        btnUserProfile.setImage(new Image(getClass().getResourceAsStream("/com/application/javafx_chat_messenger_application/Images/user-fill-white.png")));
+    }
+
+    @FXML
+    void makeAudioCall(MouseEvent event) {
+
+    }
+
+    @FXML
+    void makeVideoCall(MouseEvent event) {
+
+    }
+
+    private void resetLeftPanelButtonColorToGray() {
+        btnMessage.setImage(new Image(getClass().getResourceAsStream("/com/application/javafx_chat_messenger_application/Images/message-3-fill.png")));
+        btnGroup.setImage(new Image(getClass().getResourceAsStream("/com/application/javafx_chat_messenger_application/Images/team-fill-gray.png")));
+        btnUserProfile.setImage(new Image(getClass().getResourceAsStream("/com/application/javafx_chat_messenger_application/Images/user-fill-gray.png")));
+        btnSetting.setImage(new Image(getClass().getResourceAsStream("/com/application/javafx_chat_messenger_application/Images/settings-3-fill.png")));
     }
 }

@@ -3,6 +3,7 @@
 <?import com.jfoenix.controls.JFXButton?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -62,11 +63,11 @@
       </HBox>
       <HBox layoutX="25.0" layoutY="272.0" prefHeight="45.0" prefWidth="200.0" styleClass="tf-box">
          <children>
-            <TextField fx:id="password" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="Password" styleClass="tf" HBox.hgrow="ALWAYS">
+            <PasswordField fx:id="password" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="Password" styleClass="tf" HBox.hgrow="ALWAYS">
                <font>
                   <Font size="15.0" />
                </font>
-            </TextField>
+            </PasswordField>
             <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                <HBox.margin>
                   <Insets right="5.0" top="8.0" />
@@ -90,6 +91,15 @@
                   <Font size="15.0" />
                </font>
             </JFXButton>
+         </children>
+      </HBox>
+      <HBox alignment="CENTER" prefHeight="25.0" prefWidth="200.0">
+         <children>
+            <Label fx:id="labelMsg" prefHeight="25.0" textFill="WHITE">
+               <font>
+                  <Font size="13.0" />
+               </font>
+            </Label>
          </children>
       </HBox>
    </children>

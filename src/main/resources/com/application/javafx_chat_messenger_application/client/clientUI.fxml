@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="ap_main" prefHeight="500.0" prefWidth="600.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.application.javafx_chat_messenger_application.client.ClientController2">
+<AnchorPane fx:id="ap_main" prefHeight="550.0" prefWidth="750.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.application.javafx_chat_messenger_application.client.ClientController2">
    <children>
       <VBox alignment="CENTER" prefHeight="400.0" prefWidth="600.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -58,11 +58,7 @@
                               </Button>
                            </children>
                         </HBox>
-                        <ScrollPane prefHeight="132.0" prefWidth="186.0">
-                           <content>
-                              <ListView fx:id="groupListView" prefHeight="124.0" prefWidth="184.0" />
-                           </content>
-                        </ScrollPane>
+                        <ListView fx:id="groupListView" prefHeight="124.0" prefWidth="184.0" />
                      </children>
                   </VBox>
                   <ScrollPane fx:id="sp_main" prefHeight="280.0" prefWidth="600.0">

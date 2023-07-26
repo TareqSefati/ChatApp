@@ -3,6 +3,7 @@
 <?import com.jfoenix.controls.JFXButton?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -10,7 +11,6 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<?import javafx.scene.control.PasswordField?>
 <VBox alignment="CENTER_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="480.0" spacing="20.0" styleClass="white-pan" stylesheets="@loginUiStyle.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.application.javafx_chat_messenger_application.client.SignInController">
    <children>
       <Label text="Sign In" textFill="#da7a7a">
@@ -26,7 +26,7 @@
             <Insets left="15.0" right="15.0" top="20.0" />
          </VBox.margin>
          <children>
-            <TextField fx:id="userIdOrEmail" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="UserId or Email" styleClass="tf" HBox.hgrow="ALWAYS">
+            <TextField fx:id="userIdOrEmail" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="Email" styleClass="tf" HBox.hgrow="ALWAYS">
                <font>
                   <Font size="15.0" />
                </font>
