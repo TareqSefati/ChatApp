@@ -53,7 +53,10 @@ public class SignInController {
         String password = PasswordUtil.hashPassword(userPassword.getText());
         User user = getUser(email, password);
         if (user != null) {
-            root = FXMLLoader.load(getClass().getResource("clientUI1.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("clientUI1.fxml"));
+            root = loader.load();
+            ClientController2 controller2 = (ClientController2) loader.getController();
+            controller2.initializeCurrentUser(user);
             scene = new Scene(root);
             Stage loginStage = (Stage)((Node)event.getSource()).getScene().getWindow();
             stage = new Stage();

@@ -1,9 +1,6 @@
 package com.application.javafx_chat_messenger_application.client;
 
-import com.application.javafx_chat_messenger_application.model.Message;
-import com.application.javafx_chat_messenger_application.model.MessageGroup;
-import com.application.javafx_chat_messenger_application.model.MessageType;
-import com.application.javafx_chat_messenger_application.model.ProgramDummyDB;
+import com.application.javafx_chat_messenger_application.model.*;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -35,7 +32,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.URL;
-import java.time.LocalTime;
 import java.util.*;
 
 /**
@@ -43,7 +39,7 @@ import java.util.*;
  */
 public class ClientController2 implements Initializable {
     @FXML
-    private BorderPane ap_main;
+    private BorderPane bp_main;
 
     @FXML
     private ScrollPane sp_main;
@@ -105,30 +101,14 @@ public class ClientController2 implements Initializable {
     private List<MessageGroup> messageGroupList = new ArrayList<>();
     private Map<MessageGroup, VBox> groupConversationMap = new HashMap<>();
     private boolean isDataBackedUp = false;
+    private User currentUser;
 
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-        try {
-            socket = new Socket("localhost", 1234);
-            System.out.println("Connected to Server");
-            labelInfo.setText("Connected to Server");
-            userId = "Id-"+ LocalTime.now();
-            labelClientName.setText(labelClientName.getText() + " - " + userId);
-            sendMessageToServer(getInitialMessage());
-            communicateWithServer(socket);
-        } catch (IOException e){
-            e.printStackTrace();
-            System.out.println("Error creating Client ... ");
-            labelInfo.setText("Error creating Client ... ");
-            closeSocket(socket);
-        }
-
-        vBoxMessages.heightProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                sp_main.setVvalue((Double) newValue);
-            }
-        });
+    public void initializeCurrentUser(User currentUser){
+        this.currentUser = currentUser;
+        userId = currentUser.getUsername();
+        labelClientName.setText(labelClientName.getText() + " - " + userId);
+        sendMessageToServer(getInitialMessage());
+        communicateWithServer(socket);
         activeClientListView.getSelectionModel().selectedItemProperty().addListener( (observable, oldVal, newVal) -> {
             if (newVal != null){
                 labelInfo.setText("Connected to Server  -  Chat with: " + activeClientListView.getSelectionModel().getSelectedItem());
@@ -153,22 +133,6 @@ public class ClientController2 implements Initializable {
                     vBoxMessages.getChildren().clear();
                 }
             }
-//            else {
-//                //check into groupListView, is there anything to backup -> backup and clear selection
-//                if (groupListView.getSelectionModel().getSelectedItem() != null){
-//                    Pair<String, String> selectedGroupPair = new Pair<>(userId, groupListView.getSelectionModel().getSelectedItem().getGroupHash());
-//                    VBox vBox = new VBox();
-//                    vBox.getChildren().addAll(vBoxMessages.getChildren());
-//                    if (!ProgramDummyDB.getUserWiseConversationMap().containsKey(selectedGroupPair)){
-//                        ProgramDummyDB.getUserWiseConversationMap().put(selectedGroupPair, vBox);
-//                    }else {
-//                        ProgramDummyDB.getUserWiseConversationMap().replace(selectedGroupPair, vBox);
-//                    }
-//                    System.out.println(userId + ": Backup last selected group conversation(activeClientListView) - " + groupListView.getSelectionModel().getSelectedItem().getGroupName());
-//                    vBoxMessages.getChildren().clear();
-//                }
-//                groupListView.getSelectionModel().clearSelection();
-//            }
             //Restore new conversation
             if (newVal != null) {
                 //check into groupListView, is there anything to back up -> backup and clear selection
@@ -193,7 +157,6 @@ public class ClientController2 implements Initializable {
                     vBoxMessages.getChildren().addAll(ProgramDummyDB.getUserWiseConversationMap().get(pairNew));
                     System.out.println(userId + ": Restore selected individual conversation(data) - " + newVal);
                 }
-
             }
             //For clear and focus message text field for every client selection.
             Platform.runLater(() -> {
@@ -226,22 +189,6 @@ public class ClientController2 implements Initializable {
                     vBoxMessages.getChildren().clear();
                 }
             }
-//            else {
-//                //check into activeClientListView, is there anything to back up -> backup and clear selection
-//                if (activeClientListView.getSelectionModel().getSelectedItem() != null){
-//                    Pair<String, String> selectedClientPair = new Pair<>(userId, activeClientListView.getSelectionModel().getSelectedItem());
-//                    VBox vBox = new VBox();
-//                    vBox.getChildren().addAll(vBoxMessages.getChildren());
-//                    if (!ProgramDummyDB.getUserWiseConversationMap().containsKey(selectedClientPair)){
-//                        ProgramDummyDB.getUserWiseConversationMap().put(selectedClientPair, vBox);
-//                    }else {
-//                        ProgramDummyDB.getUserWiseConversationMap().replace(selectedClientPair, vBox);
-//                    }
-//                    System.out.println(userId + ": Backup last selected individual conversation(groupListView) - " + activeClientListView.getSelectionModel().getSelectedItem());
-//                    vBoxMessages.getChildren().clear();
-//                }
-//                groupListView.getSelectionModel().clearSelection();
-//            }
             //Restore new conversation
             if (newVal != null){
                 //check into activeClientListView, is there anything to back up -> backup and clear selection
@@ -273,47 +220,35 @@ public class ClientController2 implements Initializable {
                 tf_message.requestFocus();
             });
         });
-
+    }
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        try {
+            socket = new Socket("localhost", 1234);
+            System.out.println("Connected to Server");
+            labelInfo.setText("Connected to Server");
+        } catch (IOException e){
+            e.printStackTrace();
+            System.out.println("Error creating Client ... ");
+            labelInfo.setText("Error creating Client ... ");
+            closeSocket(socket);
+        }
+        vBoxMessages.heightProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                sp_main.setVvalue((Double) newValue);
+            }
+        });
         groupListView.focusedProperty().addListener((observable, oldVal, newVal) -> {
             if (newVal){
                 activeClientListView.getSelectionModel().clearSelection();
             }
         });
-
         activeClientListView.focusedProperty().addListener((observable, oldVal, newVal) -> {
             if (newVal){
                 groupListView.getSelectionModel().clearSelection();
             }
         });
-
-//        if (groupListView.getSelectionModel().getSelectedItem() != null){
-//            System.out.println(userId + ": Group selected - " + groupListView.getSelectionModel().getSelectedItem().getGroupName());
-//        }
-//        if (activeClientListView.getSelectionModel().getSelectedItem() != null){
-//            System.out.println(userId + ": Individual conversation selected - " + activeClientListView.getSelectionModel().getSelectedItem());
-//        }
-
-//        if (!activeClientListView.isFocused() && groupListView.getSelectionModel().getSelectedItem() != null){
-//            if (activeClientListView.getSelectionModel().getSelectedItem() != null){
-//                Pair<String, String> pair = new Pair<>(userId, activeClientListView.getSelectionModel().getSelectedItem());
-//                VBox vBox = new VBox();
-//                vBox.getChildren().addAll(vBoxMessages.getChildren());
-//                ProgramDummyDB.getUserWiseConversationMap().replace(pair, vBox);
-//                vBoxMessages.getChildren().clear();
-//            }
-//            //activeClientListView.getSelectionModel().clearSelection();
-//        }
-//        if (!groupListView.isFocused() && activeClientListView.getSelectionModel().getSelectedItem() != null){
-//            if(groupListView.getSelectionModel().getSelectedItem() != null){
-//                Pair<String, String> pair = new Pair<>(userId, groupListView.getSelectionModel().getSelectedItem().getGroupHash());
-//                VBox vBox = new VBox();
-//                vBox.getChildren().addAll(vBoxMessages.getChildren());
-//                ProgramDummyDB.getUserWiseConversationMap().replace(pair, vBox);
-//                vBoxMessages.getChildren().clear();
-//            }
-//            //groupListView.getSelectionModel().clearSelection();
-//        }
-
         groupListView.setCellFactory(messageGroupListView -> new ListCell<MessageGroup>(){
             private InputStream imageStream = this.getClass().getResourceAsStream("/com/application/javafx_chat_messenger_application/Images/team-fill.png");
             private Image groupIconImage = new Image(imageStream);
@@ -342,7 +277,6 @@ public class ClientController2 implements Initializable {
                 }
             }
         });
-
         activeClientListView.setCellFactory(stringListView -> new ListCell<String>(){
             private InputStream imageStream = this.getClass().getResourceAsStream("/com/application/javafx_chat_messenger_application/Images/user-fill.png");
             private Image userIconImage = new Image(imageStream);
@@ -377,7 +311,6 @@ public class ClientController2 implements Initializable {
     private void communicateWithServer(Socket socket) {
         receiverMessageTread(socket);
     }
-
 
     private void sendMessageToServer(Message message) {
         if (message.getMessageType().equals(MessageType.CONNECTION)){
@@ -438,7 +371,7 @@ public class ClientController2 implements Initializable {
                         System.out.println(message.toString());
                         //Database cleanup(if necessary)
                         Platform.runLater(() -> {
-                            ap_main.getScene().getWindow().hide();
+                            bp_main.getScene().getWindow().hide();
                             openLoginUI();
                         });
                     } else if (message.getMessageType().equals(MessageType.REMOVE_CLIENT)) {
@@ -676,7 +609,7 @@ public class ClientController2 implements Initializable {
 
     @FXML
     void btnExitOnClicked(MouseEvent event) {
-        ap_main.getScene().getWindow().hide();
+        bp_main.getScene().getWindow().hide();
         openLoginUI();
     }
 
