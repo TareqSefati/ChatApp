@@ -14,12 +14,7 @@ public class ServerApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         System.out.println("loading server ...");
-//        Parent root = FXMLLoader.load(getClass().getResource("serverUI-basic-design.fxml"));
-//        primaryStage.setTitle("Server!");
-//        primaryStage.setScene(new Scene(root, 480, 400));
-//        primaryStage.show();
-
-        FXMLLoader fxmlLoader = new FXMLLoader(ServerApplication.class.getResource("serverUI.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(ServerApplication.class.getResource("serverUIRaw.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
         stage.setTitle("Server!");
         stage.setScene(scene);

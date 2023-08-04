@@ -49,7 +49,6 @@ public class ServerController2 implements Initializable {
     private ScrollPane sp_main;
     @FXML
     private ScrollPane spUserList;
-    private Server server;
     private ServerSocket serverSocket;
     private Socket socket;
     private Map<String, Socket> activeClientList;
