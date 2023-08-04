@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.paint.RadialGradient?>
+<?import javafx.scene.paint.Stop?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="680.0" prefWidth="980.0" styleClass="parent" stylesheets="@loginUiStyle.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.tareq.chatapp.client.LoginController">
+   <children>
+      <Pane layoutY="150.0" prefHeight="400.0" prefWidth="980.0" styleClass="pane">
+         <children>
+            <Label layoutX="24.0" layoutY="102.0" text="Don't have an account?" textFill="WHITE">
+               <font>
+                  <Font size="20.0" />
+               </font>
+            </Label>
+            <Label layoutX="23.0" layoutY="138.0" prefHeight="53.0" prefWidth="250.0" text="This is a dummy text. This is a dummy text.This is a dummy text." textFill="WHITE" wrapText="true">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Label>
+            <JFXButton layoutX="24.0" layoutY="204.0" onAction="#openSignup" prefHeight="35.0" prefWidth="120.0" styleClass="trans-btn-white-border" text="Sign Up">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </JFXButton>
+            <Label layoutX="711.0" layoutY="102.0" text="Have an account?" textFill="WHITE">
+               <font>
+                  <Font size="20.0" />
+               </font>
+            </Label>
+            <Label layoutX="710.0" layoutY="138.0" prefHeight="53.0" prefWidth="250.0" text="This is a dummy text. This is a dummy text.This is a dummy text." textFill="WHITE" wrapText="true">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Label>
+            <JFXButton fx:id="btnCancel" layoutX="850.0" layoutY="204.0" onAction="#cancelApp" prefHeight="35.0" prefWidth="85.0" style="-fx-border-color: #932020;" styleClass="trans-btn-white-border" text="Exit">
+               <font>
+                  <Font size="15.0" />
+               </font>
+               <ripplerFill>
+                  <RadialGradient centerX="0.5166666666666667" centerY="0.5" radius="0.5348837209302325">
+                     <stops>
+                        <Stop color="#bc3737" />
+                        <Stop color="#611414" offset="1.0" />
+                     </stops>
+                  </RadialGradient>
+               </ripplerFill>
+            </JFXButton>
+            <JFXButton layoutX="711.0" layoutY="204.0" onAction="#openSignin" prefHeight="35.0" prefWidth="120.0" styleClass="trans-btn-white-border" text="Sign In">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </JFXButton>
+            <JFXButton fx:id="btnCancel1" layoutX="159.0" layoutY="204.0" onAction="#cancelApp" prefHeight="35.0" prefWidth="85.0" style="-fx-border-color: #932020;" styleClass="trans-btn-white-border" text="Exit">
+               <font>
+                  <Font size="15.0" />
+               </font>
+               <ripplerFill>
+                  <RadialGradient centerX="0.5166666666666667" centerY="0.5" radius="0.5348837209302325">
+                     <stops>
+                        <Stop color="#bc3737" />
+                        <Stop color="#611414" offset="1.0" />
+                     </stops>
+                  </RadialGradient>
+               </ripplerFill>
+            </JFXButton>
+            <VBox fx:id="vbox" layoutX="10.0" layoutY="-40.0" prefHeight="480.0" prefWidth="480.0" styleClass="white-pan" />
+         </children>
+      </Pane>
+   </children>
+</AnchorPane>

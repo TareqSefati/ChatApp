@@ -1,11 +1,13 @@
-module com.application.javafx_chat_messenger_application {
+module com.tareq.chatapp {
     requires javafx.controls;
     requires javafx.fxml;
     requires com.jfoenix;
 
+    requires org.controlsfx.controls;
+    requires java.persistence;
 
-    exports com.application.javafx_chat_messenger_application.client;
-    opens com.application.javafx_chat_messenger_application.client to javafx.fxml;
-    exports com.application.javafx_chat_messenger_application.server;
-    opens com.application.javafx_chat_messenger_application.server to javafx.fxml;
+    exports com.tareq.chatapp.server;
+    opens com.tareq.chatapp.server to javafx.fxml;
+    exports com.tareq.chatapp.client;
+    opens com.tareq.chatapp.client to javafx.fxml;
 }
