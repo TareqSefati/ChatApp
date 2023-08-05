@@ -23,6 +23,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -66,7 +67,7 @@ public class ServerController2 implements Initializable {
 //            System.out.println("Error creating Server ... ");
 //        }
 
-        loadUsers();
+//        loadUsers();
         try {
             serverSocket = new ServerSocket(1234);
             labelInfo.setText("Server successfully created.");
@@ -224,7 +225,7 @@ public class ServerController2 implements Initializable {
                     }
                 } catch (IOException | ClassNotFoundException e) {
                     closeSocket(skt);
-                    if (e instanceof SocketException){
+                    if (e instanceof SocketException || e instanceof EOFException){
                         System.out.println("Some how client is disconnected.");
                         if (clientId != null){
                             System.out.println("Update server with active client list & also UI");

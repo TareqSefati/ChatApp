@@ -63,6 +63,15 @@ public class ProgramDummyDB {
         return userList;
     }
 
+    public static boolean isIdenticalUser(User targetUser){
+        for (User user : userList) {
+            if (targetUser.getUsername().equals(user.getUsername()) && targetUser.getEmail().equals(user.getEmail())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static User findUser(String email, String password) {
         for (User user : userList) {
             if (email.equals(user.getEmail()) && password.equals(user.getPassword())) {

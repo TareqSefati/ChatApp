@@ -611,6 +611,7 @@ public class ClientController2 implements Initializable {
     void btnExitOnClicked(MouseEvent event) {
         bp_main.getScene().getWindow().hide();
         openLoginUI();
+        closeSocket(socket);
     }
 
     @FXML

@@ -40,9 +40,14 @@ public class SignUpController {
             user.setEmail(email.getText());
             user.setUsername(username.getText());
             user.setPassword(PasswordUtil.hashPassword(password.getText()));
-            ProgramDummyDB.getUserList().add(user);
-            labelMsg.setStyle("-fx-text-fill: WHITE");
-            labelMsg.setText("Registration Successful! Go to SignIn.");
+            if (!ProgramDummyDB.isIdenticalUser(user)){
+                ProgramDummyDB.getUserList().add(user);
+                labelMsg.setStyle("-fx-text-fill: WHITE");
+                labelMsg.setText("Registration Successful! Go to SignIn.");
+            }else {
+                labelMsg.setStyle("-fx-text-fill: #F78C7B");
+                labelMsg.setText("Already Registered. Go to SignIn.");
+            }
             email.clear();
             username.clear();
             password.clear();
