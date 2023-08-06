@@ -1,0 +1,35 @@
+.root {
+    -fx-background-color: transparent;
+    -fx-background-radius: 20 0 20 20;
+}
+/*.parent{
+	-fx-background-color: transparent;
+	-fx-background-radius: 20 0 20 20;
+}*/
+
+.mainPane {
+    -fx-background-color: linear-gradient(to bottom right, #FF7F50, #6A5ACD);
+    -fx-background-radius: 20 0 20 20;
+}
+
+.scroll-pane > .viewport {
+   -fx-background-color: transparent;
+}
+
+.scroll-pane {
+   -fx-background-color: transparent;
+}
+
+.trans-btn-white-border{
+	-fx-background-color: transparent;
+	-fx-background-radius: 5px;
+	-fx-border-color: #023e8a;
+	-fx-border-radius: 5px;
+	-fx-border-width: 2px;
+	-fx-text-fill: black;
+}
+.user-list-border{
+    -fx-border-color: #D5D0F1;
+	-fx-border-radius: 5px;
+	-fx-border-width: 1px;
+}

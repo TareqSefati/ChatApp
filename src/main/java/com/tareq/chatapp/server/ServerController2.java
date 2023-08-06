@@ -21,9 +21,15 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import javafx.stage.Stage;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -41,9 +47,19 @@ public class ServerController2 implements Initializable {
     @FXML
     private Label labelInfo;
     @FXML
-    private Button button_send;
+    private Pane titlePane;
     @FXML
-    private TextField tf_message;
+    private ImageView btnClose;
+    @FXML
+    private ImageView btnMinimize;
+    @FXML
+    private Button btnLoadRegisteredUser;
+    @FXML
+    private Button btnLoadActiveUser;
+    @FXML
+    private Button btnDeleteAllUser;
+    @FXML
+    private Button btnLoadGroupInfo;
     @FXML
     private VBox activeClientsBox;
     @FXML
@@ -55,18 +71,12 @@ public class ServerController2 implements Initializable {
     private ServerSocket serverSocket;
     private Socket socket;
     private ObjectOutputStream objectOutputStream;
+    private double x, y;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-//        try{
-//            server = new Server(new ServerSocket(1234));
-//            System.out.println("Connected to Client!");
-//        }catch(IOException e){
-//            e.printStackTrace();
-//            System.out.println("Error creating Server ... ");
-//        }
-
 //        loadUsers();
+
         try {
             serverSocket = new ServerSocket(1234);
             labelInfo.setText("Server successfully created.");
@@ -102,6 +112,9 @@ public class ServerController2 implements Initializable {
                 sp_main.setVvalue((Double) newValue);
             }
         });
+        Platform.runLater(() -> {
+                btnLoadRegisteredUser.fire();
+        });
 //        usersBox.heightProperty().addListener(new ChangeListener<Number>() {
 //            @Override
 //            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
@@ -111,6 +124,7 @@ public class ServerController2 implements Initializable {
 
         //receiveMessageFromClient();  // name may be communicateWithClient and place it after serverSocket.accept();
     }
+
 
     private void closeSocket(Socket socket) {
         try {
@@ -337,10 +351,25 @@ public class ServerController2 implements Initializable {
         });
     }
 
+    private void activateTitleDragFunctionality(Stage stage){
+        titlePane.setOnMousePressed(mouseEvent -> {
+            x = mouseEvent.getSceneX();
+            y = mouseEvent.getSceneY();
+        });
+        titlePane.setOnMouseDragged(mouseEvent -> {
+            stage.setX(mouseEvent.getScreenX() - x);
+            stage.setY(mouseEvent.getScreenY() - y);
+        });
+        btnClose.setOnMouseClicked(mouseEvent -> {
+            Platform.exit();
+        });
+        btnMinimize.setOnMouseClicked(mouseEvent -> stage.setIconified(true));
+    }
     @FXML
     void loadActiveUser(ActionEvent event) {
         System.out.println("Loading active users");
         usersBox.getChildren().clear();
+        usersBox.setAlignment(Pos.CENTER_LEFT);
         int i = 1;
         for (String activeClientId : ProgramDummyDB.getActiveClientIds()) {
             Text t = new Text(i++ +". " + activeClientId);
@@ -349,11 +378,18 @@ public class ServerController2 implements Initializable {
     }
     @FXML
     void loadRegisteredUser(ActionEvent event) {
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        activateTitleDragFunctionality(stage);
         System.out.println("Loading registered users");
         usersBox.getChildren().clear();
+        usersBox.setAlignment(Pos.CENTER_LEFT);
+        Text t = new Text("Registered Users");
+        t.setFont(Font.font("Arial Rounded MT Bold", FontWeight.NORMAL, 13));
+        usersBox.getChildren().add(t);
         int i = 1;
         for (User user : ProgramDummyDB.getUserList()) {
-            Text t = new Text(i++ +". " + user.getUsername());
+            t = new Text(i++ +". " + user.getUsername());
+            t.setFont(Font.font("Arial Rounded MT Bold", FontWeight.NORMAL, 12));
             usersBox.getChildren().add(t);
         }
     }
