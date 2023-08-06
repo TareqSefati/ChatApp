@@ -41,7 +41,7 @@ public class SignUpController {
             user.setUsername(username.getText());
             user.setPassword(PasswordUtil.hashPassword(password.getText()));
             if (!ProgramDummyDB.isIdenticalUser(user)){
-                ProgramDummyDB.getUserList().add(user);
+                ProgramDummyDB.addUserInFile(user);
                 labelMsg.setStyle("-fx-text-fill: WHITE");
                 labelMsg.setText("Registration Successful! Go to SignIn.");
             }else {

@@ -1,5 +1,6 @@
 package com.tareq.chatapp.model;
 
+import com.tareq.chatapp.util.FileUtil;
 import javafx.scene.layout.VBox;
 import javafx.util.Pair;
 
@@ -26,6 +27,42 @@ public class ProgramDummyDB {
         return activeClientList;
     }
 
+    //GENERATING DUMMY USERS DATA:
+    private static List<User> userList = new ArrayList<>(); //UserController.generateDummyUsers(10);
+    public static List<User> getUserList() {
+        userList = FileUtil.getRegisteredUserFromFile();
+        return userList;
+    }
+
+    public static void addUserInFile(User user){
+        FileUtil.appendUserToFile(user);
+        userList = FileUtil.getRegisteredUserFromFile();
+    }
+
+    public static void deleteAllRegisteredUser(){
+        FileUtil.deleteAllUserRecords();
+        userList = FileUtil.getRegisteredUserFromFile();
+    }
+
+    public static boolean isIdenticalUser(User targetUser){
+        userList = FileUtil.getRegisteredUserFromFile();
+        for (User user : userList) {
+            if (targetUser.getUsername().equals(user.getUsername()) && targetUser.getEmail().equals(user.getEmail())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static User findUser(String email, String password) {
+        userList = FileUtil.getRegisteredUserFromFile();
+        for (User user : userList) {
+            if (email.equals(user.getEmail()) && password.equals(user.getPassword())) {
+                return user;
+            }
+        }
+        return null;
+    }
 
     //CLIENT SIDE DATA:
     private static Map<String, List<MessageGroup>> userWiseGroupMap = new HashMap<>();
@@ -54,30 +91,5 @@ public class ProgramDummyDB {
 
     public static Map<Pair<String, String>, VBox> getUserWiseConversationMap() {
         return userWiseConversationMap;
-    }
-
-    //GENERATING DUMMY USERS DATA:
-    private static List<User> userList = new ArrayList<>(); //UserController.generateDummyUsers(10);
-
-    public static List<User> getUserList() {
-        return userList;
-    }
-
-    public static boolean isIdenticalUser(User targetUser){
-        for (User user : userList) {
-            if (targetUser.getUsername().equals(user.getUsername()) && targetUser.getEmail().equals(user.getEmail())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public static User findUser(String email, String password) {
-        for (User user : userList) {
-            if (email.equals(user.getEmail()) && password.equals(user.getPassword())) {
-                return user;
-            }
-        }
-        return null;
     }
 }

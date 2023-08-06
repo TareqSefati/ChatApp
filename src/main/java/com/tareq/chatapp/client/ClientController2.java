@@ -97,9 +97,6 @@ public class ClientController2 implements Initializable {
     private Socket socket;
     private static String userId;
     private ObjectOutputStream objectOutputStream;
-    private Map<Pair<String, String>, VBox> userConversationMap = new HashMap<>();
-    private List<MessageGroup> messageGroupList = new ArrayList<>();
-    private Map<MessageGroup, VBox> groupConversationMap = new HashMap<>();
     private boolean isDataBackedUp = false;
     private User currentUser;
 

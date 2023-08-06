@@ -4,9 +4,11 @@ package com.tareq.chatapp.server;
  */
 
 import com.tareq.chatapp.model.*;
+import com.tareq.chatapp.util.FileUtil;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
@@ -52,9 +54,6 @@ public class ServerController2 implements Initializable {
     private ScrollPane spUserList;
     private ServerSocket serverSocket;
     private Socket socket;
-    private Map<String, Socket> activeClientList;
-    private List<String> activeClientIds;
-
     private ObjectOutputStream objectOutputStream;
 
     @Override
@@ -338,4 +337,33 @@ public class ServerController2 implements Initializable {
         });
     }
 
+    @FXML
+    void loadActiveUser(ActionEvent event) {
+        System.out.println("Loading active users");
+        usersBox.getChildren().clear();
+        int i = 1;
+        for (String activeClientId : ProgramDummyDB.getActiveClientIds()) {
+            Text t = new Text(i++ +". " + activeClientId);
+            usersBox.getChildren().add(t);
+        }
+    }
+    @FXML
+    void loadRegisteredUser(ActionEvent event) {
+        System.out.println("Loading registered users");
+        usersBox.getChildren().clear();
+        int i = 1;
+        for (User user : ProgramDummyDB.getUserList()) {
+            Text t = new Text(i++ +". " + user.getUsername());
+            usersBox.getChildren().add(t);
+        }
+    }
+    @FXML
+    void deleteAllUser(ActionEvent event) {
+        System.out.println("Deleting all registered users");
+        ProgramDummyDB.deleteAllRegisteredUser();
+    }
+    @FXML
+    void loadGroupInfo(ActionEvent event) {
+        System.out.println("Loading Group info");
+    }
 }
