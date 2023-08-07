@@ -226,6 +226,7 @@ public class ServerController2 implements Initializable {
                         } else if (message.getMessageType().equals(MessageType.GROUP_CREATION)) {
                             //New group created message is received and send this info to group members.
                             System.out.println("Server: New group created.\n" + message.toString());
+                            ProgramDummyDB.getGroupList().add((MessageGroup) message.getDataObject());
                             sendToGroupMember(message);
                             System.out.println("Server: Group creation message successfully sent to group member.");
                         } else if (message.getMessageType().equals(MessageType.GROUP_MESSAGE) && isValidMessage(message)) {
@@ -370,9 +371,13 @@ public class ServerController2 implements Initializable {
         System.out.println("Loading active users");
         usersBox.getChildren().clear();
         usersBox.setAlignment(Pos.CENTER_LEFT);
+        Text t = new Text("Active Users");
+        t.setFont(Font.font("Arial Rounded MT Bold", FontWeight.NORMAL, 13));
+        usersBox.getChildren().add(t);
         int i = 1;
         for (String activeClientId : ProgramDummyDB.getActiveClientIds()) {
-            Text t = new Text(i++ +". " + activeClientId);
+            t = new Text(i++ +". " + activeClientId);
+            t.setFont(Font.font("Arial Rounded MT Bold", FontWeight.NORMAL, 12));
             usersBox.getChildren().add(t);
         }
     }
@@ -401,5 +406,16 @@ public class ServerController2 implements Initializable {
     @FXML
     void loadGroupInfo(ActionEvent event) {
         System.out.println("Loading Group info");
+        usersBox.getChildren().clear();
+        usersBox.setAlignment(Pos.CENTER_LEFT);
+        Text t = new Text("Group info");
+        t.setFont(Font.font("Arial Rounded MT Bold", FontWeight.NORMAL, 13));
+        usersBox.getChildren().add(t);
+        int i = 1;
+        for (MessageGroup group : ProgramDummyDB.getGroupList()) {
+            t = new Text(i++ +". " + group.getGroupName() + " - (" + group.getParticipantIdList().size() + " user)");
+            t.setFont(Font.font("Arial Rounded MT Bold", FontWeight.NORMAL, 12));
+            usersBox.getChildren().add(t);
+        }
     }
 }

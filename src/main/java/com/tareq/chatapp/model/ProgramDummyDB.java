@@ -18,6 +18,7 @@ public class ProgramDummyDB {
     //SERVER SIDE DATA:
     private static List<String> activeClientIds = new ArrayList<>();
     private static Map<String, Socket> activeClientList = new HashMap<>();
+    private static List<MessageGroup> groupList = new ArrayList<>();
 
     public static List<String> getActiveClientIds(){
         return activeClientIds;
@@ -25,6 +26,10 @@ public class ProgramDummyDB {
 
     public static Map<String, Socket> getActiveClientList(){
         return activeClientList;
+    }
+
+    public static List<MessageGroup> getGroupList() {
+        return groupList;
     }
 
     //GENERATING DUMMY USERS DATA:
