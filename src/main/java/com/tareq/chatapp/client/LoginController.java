@@ -26,6 +26,12 @@ public class LoginController implements Initializable{
     @FXML
     private JFXButton btnCancel1;
 
+	@FXML
+	private JFXButton btnSignUp;
+
+	@FXML
+	private JFXButton btnSignIn;
+
     private Parent fxml;
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -55,8 +61,11 @@ public class LoginController implements Initializable{
 		t.play();
 		t.setOnFinished(e->{
 			try {
-				fxml = FXMLLoader.load(getClass().getResource("SignUp.fxml"));
+				FXMLLoader loader = new FXMLLoader(getClass().getResource("SignUp.fxml"));
+				fxml = loader.load();
 				vbox.getChildren().setAll(fxml);
+				SignUpController signUpController = loader.getController();
+				signUpController.setBtnSignInSlider(btnSignIn);
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
