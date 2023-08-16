@@ -19,6 +19,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Modality;
@@ -46,6 +47,15 @@ public class ClientController2 implements Initializable {
 
     @FXML
     private VBox vBoxMessages;
+
+    @FXML
+    private VBox landingInfoVbox;
+
+    @FXML
+    private VBox chatWindowVbox;
+
+    @FXML
+    private Label labelSelectedUsername;
 
     @FXML
     private ListView<String> activeClientListView;
@@ -103,10 +113,14 @@ public class ClientController2 implements Initializable {
     public void initializeCurrentUser(User currentUser){
         this.currentUser = currentUser;
         userId = currentUser.getUsername();
-        labelClientName.setText(labelClientName.getText() + " - " + userId);
+        labelClientName.setText(userId);
         sendMessageToServer(getInitialMessage());
         communicateWithServer(socket);
         activeClientListView.getSelectionModel().selectedItemProperty().addListener( (observable, oldVal, newVal) -> {
+            if(activeClientListView.getSelectionModel().getSelectedIndex() >= 0){
+                landingInfoVbox.setVisible(false);
+                chatWindowVbox.setVisible(true);
+            }
             if (newVal != null){
                 labelInfo.setText("Connected to Server  -  Chat with: " + activeClientListView.getSelectionModel().getSelectedItem());
             }else {
@@ -132,6 +146,7 @@ public class ClientController2 implements Initializable {
             }
             //Restore new conversation
             if (newVal != null) {
+                labelSelectedUsername.setText(newVal);
                 //check into groupListView, is there anything to back up -> backup and clear selection
                 if (groupListView.getSelectionModel().getSelectedItem() != null){
                     Pair<String, String> selectedGroupPair = new Pair<>(userId, groupListView.getSelectionModel().getSelectedItem().getGroupHash());
@@ -163,6 +178,10 @@ public class ClientController2 implements Initializable {
         });
 
         groupListView.getSelectionModel().selectedItemProperty().addListener((observable, oldVal, newVal) -> {
+            if(groupListView.getSelectionModel().getSelectedIndex() >= 0){
+                landingInfoVbox.setVisible(false);
+                chatWindowVbox.setVisible(true);
+            }
             if (newVal != null){
                 labelInfo.setText("Connected to Server  -  Chat with group: " + groupListView.getSelectionModel().getSelectedItem().getGroupName());
             }else {
@@ -188,6 +207,7 @@ public class ClientController2 implements Initializable {
             }
             //Restore new conversation
             if (newVal != null){
+                labelSelectedUsername.setText(newVal.getGroupName());
                 //check into activeClientListView, is there anything to back up -> backup and clear selection
                 if (activeClientListView.getSelectionModel().getSelectedItem() != null){
                     Pair<String, String> selectedClientPair = new Pair<>(userId, activeClientListView.getSelectionModel().getSelectedItem());
@@ -445,8 +465,10 @@ public class ClientController2 implements Initializable {
         HBox hBox = new HBox();
         hBox.setAlignment(alignmentPosition);
         Text text = new Text();
+        text.setFont(Font.font(16));
         TextFlow textFlow = new TextFlow(text);
         if(alignmentPosition.equals(Pos.CENTER_RIGHT)){
+            text.setFill(Color.WHITE);
             text.setText(message.getMsg());
             hBox.setPadding(new Insets(5, 5, 5, 35));
             textFlow.setPadding(new Insets(5, 5, 5, 5));
@@ -455,7 +477,9 @@ public class ClientController2 implements Initializable {
                             "-fx-background-color: rgb(15, 125, 242);" +
                             "-fx-background-radius: 10px;");
         } else if (alignmentPosition.equals(Pos.CENTER_LEFT)) {
-            text.setText(message.getSenderId()+ "->"+ message.getMsg());
+            text.setFill(Color.BLACK);
+//            text.setText(message.getSenderId()+ "->"+ message.getMsg());
+            text.setText(message.getMsg());
             hBox.setPadding(new Insets(5, 35, 5, 5));
             textFlow.setPadding(new Insets(5, 5, 5, 5));
             textFlow.setStyle(
@@ -617,6 +641,9 @@ public class ClientController2 implements Initializable {
         btnGroup.setImage(new Image(getClass().getResourceAsStream("/com/tareq/chatapp/Images/team-fill-white.png")));
         individualChatPane.setVisible(false);
         groupChatPane.setVisible(true);
+        groupListView.getSelectionModel().clearSelection();
+        landingInfoVbox.setVisible(true);
+        chatWindowVbox.setVisible(false);
     }
 
     @FXML
@@ -630,6 +657,9 @@ public class ClientController2 implements Initializable {
         btnMessage.setImage(new Image(getClass().getResourceAsStream("/com/tareq/chatapp/Images/message-3-fill-white.png")));
         groupChatPane.setVisible(false);
         individualChatPane.setVisible(true);
+        activeClientListView.getSelectionModel().clearSelection();
+        landingInfoVbox.setVisible(true);
+        chatWindowVbox.setVisible(false);
     }
 
     @FXML

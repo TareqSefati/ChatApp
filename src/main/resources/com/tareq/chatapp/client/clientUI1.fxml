@@ -193,117 +193,200 @@
       </HBox>
    </left>
    <center>
-      <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+      <StackPane BorderPane.alignment="CENTER">
          <children>
-            <HBox alignment="CENTER_LEFT" prefHeight="82.0" prefWidth="200.0">
+            <VBox fx:id="landingInfoVbox" alignment="CENTER" prefHeight="200.0" prefWidth="100.0" style="-fx-background-color: #838586;">
                <children>
-                  <Pane fx:id="selectedUserInfoPane" prefHeight="82.0" prefWidth="535.0">
-                     <children>
-                        <VBox alignment="CENTER_LEFT" prefHeight="82.0" prefWidth="313.0">
-                           <children>
-                              <Label fx:id="labelSelectedUsername" prefHeight="31.0" prefWidth="288.0" text="Username" textFill="#9da7a7">
-                                 <font>
-                                    <Font name="Ebrima Bold" size="24.0" />
-                                 </font>
-                              </Label>
-                              <HBox alignment="CENTER_LEFT" prefHeight="38.0" prefWidth="303.0" spacing="11.0">
-                                 <children>
-                                    <Circle fx:id="activeIndicator" fill="#50c948" radius="4.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" />
-                                    <Label fx:id="activeLabel" prefHeight="27.0" prefWidth="60.0" text="Online" textFill="#9da7a7">
-                                       <font>
-                                          <Font name="Ebrima" size="18.0" />
-                                       </font>
-                                    </Label>
-                                    <ImageView fx:id="btnAudioCall" fitHeight="30.0" fitWidth="30.0" onMouseClicked="#makeAudioCall" pickOnBounds="true" preserveRatio="true">
-                                       <image>
-                                          <Image url="@../Images/phone-fill.png" />
-                                       </image>
-                                       <HBox.margin>
-                                          <Insets right="10.0" />
-                                       </HBox.margin>
-                                    </ImageView>
-                                    <ImageView fx:id="btnVideoCall" fitHeight="30.0" fitWidth="30.0" onMouseClicked="#makeVideoCall" pickOnBounds="true" preserveRatio="true">
-                                       <image>
-                                          <Image url="@../Images/vidicon-fill.png" />
-                                       </image>
-                                       <HBox.margin>
-                                          <Insets right="10.0" />
-                                       </HBox.margin>
-                                    </ImageView>
-                                    <ImageView fx:id="btnOption" fitHeight="30.0" fitWidth="30.0" onMouseClicked="#btnOptionOnClicked" pickOnBounds="true" preserveRatio="true">
-                                       <image>
-                                          <Image url="@../Images/more-2-fill.png" />
-                                       </image>
-                                    </ImageView>
-                                 </children>
-                              </HBox>
-                           </children>
-                           <padding>
-                              <Insets left="10.0" />
-                           </padding>
-                        </VBox>
-                     </children>
-                  </Pane>
-                  <Pane prefHeight="82.0" prefWidth="567.0">
-                     <children>
-                        <VBox alignment="CENTER" prefHeight="82.0" prefWidth="354.0">
-                           <children>
-                              <Label fx:id="labelClientName" prefHeight="22.0" prefWidth="365.0" text="Client" />
-                              <TextFlow prefHeight="45.0" prefWidth="342.0">
-                                 <children>
-                                    <Label fx:id="labelInfo" prefHeight="45.0" prefWidth="348.0" />
-                                 </children>
-                              </TextFlow>
-                           </children>
-                        </VBox>
-                     </children>
-                  </Pane>
-               </children>
-               <VBox.margin>
-                  <Insets />
-               </VBox.margin>
-            </HBox>
-            <ScrollPane fx:id="sp_main" prefHeight="534.0" prefWidth="676.0" styleClass="transparent-background">
-               <content>
-                  <VBox fx:id="vBoxMessages" alignment="BOTTOM_CENTER" prefHeight="532.0" prefWidth="670.0" spacing="5.0" />
-               </content>
-            </ScrollPane>
-            <HBox alignment="CENTER" prefHeight="85.0" prefWidth="200.0">
-               <children>
-                  <ImageView fx:id="btnImoji" fitHeight="34.0" fitWidth="37.0" onMouseClicked="#btnImojiOnClicked" pickOnBounds="true" preserveRatio="true">
+                  <Pane prefHeight="161.0" prefWidth="676.0" />
+                  <ImageView fitHeight="124.0" fitWidth="112.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@../Images/emotion-happy-line.png" />
+                        <Image url="@../Images/question-answer-fill.png" />
                      </image>
                   </ImageView>
-                  <ImageView fx:id="btnAttachment" fitHeight="34.0" fitWidth="37.0" onMouseClicked="#btnAttachmentOnClicked" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../Images/attachment-2.png" />
-                     </image>
-                     <HBox.margin>
-                        <Insets left="10.0" right="10.0" />
-                     </HBox.margin>
-                  </ImageView>
-                  <TextField fx:id="tf_message" prefHeight="64.0" prefWidth="513.0" promptText="Type something to send..." styleClass="transparent-background">
+                  <Label text="Desktop Chatting Appliation" textFill="#1d186f">
                      <font>
-                        <Font name="Ebrima" size="16.0" />
+                        <Font name="Arial Rounded MT Bold" size="36.0" />
                      </font>
-                  </TextField>
-                  <Button fx:id="button_send" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#sendMessage" prefHeight="28.0" prefWidth="32.0">
-                     <graphic>
-                        <ImageView fitHeight="34.0" fitWidth="37.0" onMouseClicked="#btnSendMessageOnClicked" pickOnBounds="true" preserveRatio="true">
+                     <VBox.margin>
+                        <Insets bottom="10.0" top="10.0" />
+                     </VBox.margin>
+                  </Label>
+                  <Pane prefHeight="139.0" prefWidth="676.0" />
+                  <Label prefHeight="30.0" text="Developed by - Md. Tareq Sefati" textFill="#1d186f">
+                     <font>
+                        <Font name="STLiti" size="20.0" />
+                     </font>
+                  </Label>
+                  <HBox alignment="CENTER" prefHeight="30.0" spacing="10.0">
+                     <children>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../Images/send-plane-2-fill.png" />
+                              <Image url="@../Images/mail-fill.png" />
                            </image>
                         </ImageView>
-                     </graphic>
-                     <styleClass>
-                        <String fx:value="transparent-background" />
-                        <String fx:value="selected" />
-                     </styleClass>
-                  </Button>
+                        <Label prefHeight="30.0" text="tareq.sefati@gmail.com" textFill="#1d186f">
+                           <font>
+                              <Font name="STLiti" size="20.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER" prefHeight="30.0" spacing="10.0">
+                     <children>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../Images/whatsapp-fill.png" />
+                           </image>
+                        </ImageView>
+                        <Label prefHeight="30.0" text="+8801745578700" textFill="#1d186f">
+                           <font>
+                              <Font name="STLiti" size="20.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </HBox>
                </children>
-            </HBox>
+            </VBox>
+            <VBox fx:id="chatWindowVbox" prefHeight="200.0" prefWidth="100.0" visible="false">
+               <children>
+                  <HBox alignment="CENTER_LEFT" prefHeight="82.0" prefWidth="200.0" styleClass="border-bottom">
+                     <children>
+                        <Pane fx:id="selectedUserInfoPane" prefHeight="80.0" prefWidth="344.0">
+                           <children>
+                              <VBox alignment="CENTER_LEFT" prefHeight="82.0" prefWidth="313.0">
+                                 <children>
+                                    <Label fx:id="labelSelectedUsername" prefHeight="31.0" prefWidth="288.0" text="Participant's Name" textFill="#9da7a7">
+                                       <font>
+                                          <Font name="Ebrima Bold" size="18.0" />
+                                       </font>
+                                    </Label>
+                                    <HBox alignment="CENTER_LEFT" prefHeight="38.0" prefWidth="303.0" spacing="11.0">
+                                       <children>
+                                          <Circle fx:id="activeIndicator" fill="#50c948" radius="4.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" />
+                                          <Label fx:id="activeLabel" prefHeight="27.0" prefWidth="60.0" text="Online" textFill="#9da7a7">
+                                             <font>
+                                                <Font name="Ebrima" size="18.0" />
+                                             </font>
+                                          </Label>
+                                          <ImageView fx:id="btnAudioCall" fitHeight="30.0" fitWidth="30.0" onMouseClicked="#makeAudioCall" pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                <Image url="@../Images/phone-fill.png" />
+                                             </image>
+                                             <HBox.margin>
+                                                <Insets right="10.0" />
+                                             </HBox.margin>
+                                          </ImageView>
+                                          <ImageView fx:id="btnVideoCall" fitHeight="30.0" fitWidth="30.0" onMouseClicked="#makeVideoCall" pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                <Image url="@../Images/vidicon-fill.png" />
+                                             </image>
+                                             <HBox.margin>
+                                                <Insets right="10.0" />
+                                             </HBox.margin>
+                                          </ImageView>
+                                          <ImageView fx:id="btnOption" fitHeight="30.0" fitWidth="30.0" onMouseClicked="#btnOptionOnClicked" pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                <Image url="@../Images/more-2-fill.png" />
+                                             </image>
+                                          </ImageView>
+                                       </children>
+                                    </HBox>
+                                 </children>
+                                 <padding>
+                                    <Insets left="10.0" />
+                                 </padding>
+                              </VBox>
+                           </children>
+                        </Pane>
+                        <Pane prefHeight="82.0" prefWidth="5.0" style="-fx-background-radius: 5;" styleClass="dark-gray-background">
+                           <HBox.margin>
+                              <Insets bottom="5.0" top="5.0" />
+                           </HBox.margin>
+                        </Pane>
+                        <Pane prefHeight="80.0" prefWidth="326.0">
+                           <children>
+                              <VBox alignment="CENTER" prefHeight="82.0" prefWidth="326.0">
+                                 <children>
+                                    <HBox alignment="CENTER_RIGHT">
+                                       <children>
+                                          <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                <Image url="@../Images/user-fill.png" />
+                                             </image>
+                                          </ImageView>
+                                          <Label fx:id="labelClientName" prefHeight="22.0">
+                                             <font>
+                                                <Font name="Ebrima Bold" size="20.0" />
+                                             </font>
+                                          </Label>
+                                       </children>
+                                    </HBox>
+                                    <TextFlow prefHeight="45.0" prefWidth="300.0" textAlignment="RIGHT">
+                                       <children>
+                                          <Label fx:id="labelInfo" prefHeight="45.0" />
+                                       </children>
+                                    </TextFlow>
+                                 </children>
+                                 <padding>
+                                    <Insets right="10.0" />
+                                 </padding>
+                              </VBox>
+                           </children>
+                        </Pane>
+                     </children>
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin>
+                  </HBox>
+                  <ScrollPane fx:id="sp_main" prefHeight="570.0" prefWidth="676.0" styleClass="transparent-background">
+                     <content>
+                        <VBox fx:id="vBoxMessages" alignment="BOTTOM_CENTER" prefHeight="568.0" prefWidth="673.0" spacing="5.0">
+                           <padding>
+                              <Insets bottom="5.0" />
+                           </padding></VBox>
+                     </content>
+                  </ScrollPane>
+                  <HBox alignment="CENTER" prefHeight="45.0" prefWidth="676.0" styleClass="border-top">
+                     <children>
+                        <ImageView fx:id="btnImoji" fitHeight="30.0" fitWidth="30.0" onMouseClicked="#btnImojiOnClicked" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../Images/emotion-happy-line.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fx:id="btnAttachment" fitHeight="30.0" fitWidth="30.0" onMouseClicked="#btnAttachmentOnClicked" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../Images/attachment-2.png" />
+                           </image>
+                           <HBox.margin>
+                              <Insets left="10.0" right="10.0" />
+                           </HBox.margin>
+                        </ImageView>
+                        <TextField fx:id="tf_message" prefHeight="64.0" prefWidth="513.0" promptText="Type something to send..." styleClass="transparent-background">
+                           <font>
+                              <Font name="Ebrima" size="16.0" />
+                           </font>
+                        </TextField>
+                        <Button fx:id="button_send" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#sendMessage">
+                           <graphic>
+                              <ImageView fitHeight="30.0" fitWidth="30.0" onMouseClicked="#btnSendMessageOnClicked" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../Images/send-plane-2-fill.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                           <styleClass>
+                              <String fx:value="transparent-background" />
+                              <String fx:value="selected" />
+                           </styleClass>
+                           <HBox.margin>
+                              <Insets left="20.0" />
+                           </HBox.margin>
+                        </Button>
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
          </children>
-      </VBox>
+      </StackPane>
    </center>
 </BorderPane>
