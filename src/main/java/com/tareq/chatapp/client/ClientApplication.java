@@ -1,7 +1,4 @@
 package com.tareq.chatapp.client;
-/**
- * Client Main Class
- */
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -14,13 +11,14 @@ import javafx.stage.StageStyle;
 
 import java.io.IOException;
 
+/**
+ * Created by Tareq Sefati on 19-Jun-23
+ */
 public class ClientApplication extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-        //Parent root = FXMLLoader.load(getClass().getResource("clientUI.fxml"));
         Parent root = FXMLLoader.load(getClass().getResource("login.fxml"));
-        //primaryStage.setTitle("Client!");
         Scene scene = new Scene(root);
         scene.setFill(Color.TRANSPARENT);
         primaryStage.initStyle(StageStyle.TRANSPARENT);

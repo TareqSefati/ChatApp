@@ -1,7 +1,4 @@
 package com.tareq.chatapp.server;
-/**
- * Server Controller Class
- */
 
 import com.tareq.chatapp.model.*;
 import com.tareq.chatapp.util.FileUtil;
@@ -43,6 +40,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+/**
+ * Created by Tareq Sefati on 19-Jun-23
+ */
 public class ServerController2 implements Initializable {
     @FXML
     private Label labelInfo;

@@ -44,14 +44,6 @@ public class LoginController implements Initializable{
 		TranslateTransition t = new TranslateTransition(Duration.seconds(1), vbox);
 		t.setToX(vbox.getLayoutX() * 47);
 		t.play();
-		t.setOnFinished(e->{
-//			try {
-//				fxml = FXMLLoader.load(getClass().getResource("SignIn.fxml"));
-//				vbox.getChildren().setAll(fxml);
-//			} catch (IOException e1) {
-//				e1.printStackTrace();
-//			}
-		});
 	}
 	
 	@FXML

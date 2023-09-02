@@ -1,7 +1,4 @@
 package com.tareq.chatapp.server;
-/**
- * Server Main Class
- */
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -12,6 +9,9 @@ import javafx.stage.StageStyle;
 
 import java.io.IOException;
 
+/**
+ * Created by Tareq Sefati on 19-Jun-23
+ */
 public class ServerApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
